@@ -1,0 +1,226 @@
+# [START swagger]
+swagger: "2.0"
+info:
+  description: "A simple Google Cloud Endpoints API example."
+  title: "Endpoints Example"
+  version: "1.0.0"
+host: "nodejs-server-273711.appspot.com"
+# [END swagger]
+x-google-endpoints:
+  - name: "nodejs-server-273711.appspot.com"
+    allowCors: "true"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+schemes:
+  - "https"
+paths:
+  "/user/example":
+    get:
+      description: "get author name"
+      operationId: "example"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Response for submit data"
+          schema:
+            $ref: "#/definitions/ExampleResponse"
+  "/user/submitData":
+    post:
+      description: "Submit data for user"
+      operationId: "submitData"
+      produces:
+        - "application/json"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/SubmitUserDataParams"
+      responses:
+        200:
+          description: "Response for submit data"
+          schema:
+            $ref: "#/definitions/SubmitUserDataResponse"
+  "/user/authencation":
+    post:
+      description: "authencation user"
+      operationId: "authencation"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Response for authencation"
+          schema:
+            $ref: "#/definitions/AuthencationResponse"
+  "/user/getProfile":
+    post:
+      description: "Get profile for user"
+      operationId: "getProfile"
+      produces:
+        - "application/json"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/GetProfileParams"
+      responses:
+        200:
+          description: "Response for get profile"
+          schema:
+            $ref: "#/definitions/GetProfileResponse"
+  "/blog/mainPosts":
+    post:
+      description: "Get main post"
+      operationId: "getMainPosts"
+      produces:
+        - "application/json"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/GetMainPostsParams"
+      responses:
+        200:
+          description: "get main posts"
+          schema:
+            $ref: "#/definitions/GetMainPostsResponse"
+  "/admin/submitPost":
+    post:
+      description: "Submit post"
+      operationId: "submit post"
+      produces:
+        - "application/json"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/SubmitPostParams"
+      responses:
+        200:
+          description: "Response for submit post"
+  "/webhook":
+    get:
+      description: "handle verify from fb dev app"
+      operationId: "handle verify from fb dev app"
+      responses:
+        200:
+          description: "Response for verify"
+    post:
+      description: "handle msg from fb dev app"
+      operationId: "handle msg from fb dev app"
+      responses:
+        200:
+          description: "Response for submit post"
+  "/webhook/sendMsg":
+    post:
+      description: "handle send msg to fb dev app"
+      operationId: "handle send msg to fb dev app"
+      responses:
+        200:
+          description: "Response for send Msg "
+definitions:
+  SubmitUserDataParams:
+    type: "object"
+    properties:
+      userName:
+        type: "string"
+      fbUrl:
+        type: "string"
+      techKnowledge:
+        type: "string"
+      addKnowledge:
+        type: "string"
+
+  SubmitUserDataResponse:
+    type: "object"
+    properties:
+      techHandler:
+        type: "array"
+      addHandler:
+        type: "array"
+      token:
+        type: "string"
+
+  ExampleResponse:
+    type: "object"
+    properties:
+      author:
+        type: "string"
+
+  AuthencationResponse:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      exp:
+        type: "string"
+      iat:
+        type: "string"
+
+  GetProfileParams:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+
+  GetProfileResponse:
+    type: "object"
+    properties:
+      Id:
+        type: "string"
+      UserName:
+        type: "string"
+      FbUrl:
+        type: "string"
+      TechTxt:
+        type: "string"
+      AddTxt:
+        type: "string"
+
+  GetMainPostsParams:
+    type: "object"
+
+  GetMainPostsResponse:
+    type: "object"
+    properties:
+      Id:
+        type: "string"
+      Author:
+        type: "string"
+      Title:
+        type: "string"
+      Content:
+        type: "string"
+      Topic:
+        type: "string"
+      SubmitDate:
+        type: "string"
+      ImageUrl:
+        type: "string"
+
+  SubmitPostParams:
+    type: "object"
+    properties:
+      author:
+        type: "string"
+      title:
+        type: "string"
+      content:
+        type: "string"
+      topic:
+        type: "string"
+      submitDate:
+        type: "string"
+      imageUrl:
+        type: "string"
+# This section requires all requests to any path to require an API key.
+security:
+  - api_key: []
+securityDefinitions:
+  # This section configures basic authentication with an API key.
+  api_key:
+    type: "apiKey"
+    name: "key"
+    in: "query"
