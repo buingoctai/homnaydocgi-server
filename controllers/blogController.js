@@ -19,6 +19,7 @@ exports.getMainPosts = async (req, res) => {
 
   request.query(FIND_MAIN_ARTICLE, (err, data) => {
     if (err) {
+      console.log("err", err);
       res.statusCode = 500;
       res.json(err);
     }

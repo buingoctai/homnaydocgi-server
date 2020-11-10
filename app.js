@@ -1,11 +1,11 @@
-const sql = require("mssql");
+const sql = require("mssql/msnodesqlv8");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const app = express();
 const constants = require("./utils/constants");
-const { DATABASE_SERVER_CONFIG_DEV, DATABASE_SERVER_CONFIG_PRO } = constants;
+const { DATABASE_SERVER_CONFIG_DEV, DATABASE_SERVER_CONFIG_PRO, DATABASE_SERVER_LOCAL } = constants;
 app.options("*", cors());
 app.use(cors());
 
@@ -28,14 +28,16 @@ app.use("/api", limiter); // Limit request from the same API
 
 // CONNECT TO DAT5ABASE SERVER
 app.use("/", (req, res, next) => {
-  sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
-    if (err) {
+  const pool = new sql.ConnectionPool(DATABASE_SERVER_LOCAL);
+  pool.connect()
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      console.log("err", err);
       res.statusCode = 500;
       res.json(err);
-    } else {
-      next();
-    }
-  });
+    });
 });
 // ROUTES
 app.use("/user", userRoutes);

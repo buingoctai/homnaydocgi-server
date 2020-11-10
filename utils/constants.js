@@ -47,7 +47,17 @@ const DATABASE_SERVER_CONFIG_PRO = {
   port: 1433,
   server: "homnaydocgi.database.windows.net",
 };
-
+const DATABASE_SERVER_LOCAL = {
+  user: "LAP13002",
+  password: "Aa123456",
+  server: "LAP13002\\SQLEXPRESS",
+  database: "homnaydocgi-dev",
+  port: 1433,
+  options: {
+    trustedConnection: true
+  },
+  driver: 'msnodesqlv8',
+}
 const FACEBOOK_DEV = {
   VALIDATION_TOKEN: "TokenTuyChon",
   PAGE_ACCESS_TOKEN:
@@ -104,6 +114,7 @@ module.exports = {
   FIND_AUDIO_ARTICLE_CRAWL,
   DATABASE_SERVER_CONFIG_DEV,
   DATABASE_SERVER_CONFIG_PRO,
+  DATABASE_SERVER_LOCAL,
   FACEBOOK_DEV,
   ERROR_CODE,
   GET_ALL_SUBSCRITION,
