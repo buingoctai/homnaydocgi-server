@@ -1,4 +1,5 @@
 const sql = require("mssql");
+// const newsql=require('mssql/msnodesqlv8');
 const uuidv4 = require("uuid/v4");
 
 const constants = require("../utils/constants");
@@ -6,7 +7,12 @@ const { INSERT_ARTICLE, DELETE_ARTICLES, UPDATE_ARTICLES } = constants;
 
 exports.submitArticle = async (req, res) => {
   const { author, title, content, topic, submitDate, imageUrl } = req.body;
-  const subContentList = content.split(".");
+  const newContent = content.replace(/[#$%^&*()''""-]/g, " ");
+  const newTitle = title.replace(/[#$%^&*()''""-]/g, " ") || "KHÔNG TIÊU ĐỀ";
+  const newImageUrl =
+    imageUrl ||
+    "https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/70930564_923020218065096_7174011323368341504_n.jpg?_nc_cat=100&ccb=2&_nc_sid=174925&_nc_ohc=JebNwt_2DD4AX9D4CiP&_nc_ht=scontent.fsgn5-5.fna&oh=5c30346edb198746933fca88f14fbd63&oe=5FE85A14";
+  const subContentList = newContent.split(".");
   let brief = "";
 
   if (subContentList.length < 2) {
@@ -20,14 +26,15 @@ exports.submitArticle = async (req, res) => {
   request.query(
     INSERT_ARTICLE.replace("IdValue", id)
       .replace("AuthorValue", author)
-      .replace("TitleValue", title)
-      .replace("ContentValue", content)
+      .replace("TitleValue", newTitle)
+      .replace("ContentValue", newContent)
       .replace("TopicValue", topic)
       .replace("SubmitDateValue", submitDate)
-      .replace("ImageValue", imageUrl)
+      .replace("ImageValue", newImageUrl)
       .replace("BriefValue", brief),
     (err) => {
       if (err) {
+        console.log("submitArticle err", err);
         res.statusCode = 500;
         res.json(err);
       } else {

@@ -23,6 +23,7 @@ exports.getMainPosts = async (req, res) => {
       res.statusCode = 500;
       res.json(err);
     }
+    console.log(data);
     const {
       recordset: [postData],
     } = data;
@@ -85,6 +86,13 @@ exports.getAllPost = async (req, res) => {
         recordset: [item],
       } = data;
 
+      console.log(
+        "find as page",
+        FIND_ARTICLE_AS_PAGE.replace("orderByValue", orderBy)
+          .replace("orderTypeValue", orderType)
+          .replace("startValue", pageSize * (pageIndex - 1))
+          .replace("pageSizeValue", pageSize)
+      );
       request.query(
         FIND_ARTICLE_AS_PAGE.replace("orderByValue", orderBy)
           .replace("orderTypeValue", orderType)

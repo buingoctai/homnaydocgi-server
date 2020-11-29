@@ -34,11 +34,11 @@ const INSER_ARTICLE_CRAWL =
 const FIND_AUDIO_ARTICLE_CRAWL =
   "SELECT AudioUrl FROM CRAWLER_AUDIO WHERE ArticleId='IdValue'";
 const DATABASE_SERVER_CONFIG_DEV = {
-  user: "taibn1",
+  user: "taibn",
   password: "LTD1996@",
-  database: "homnaydocgi dev",
+  database: "homnaydocgi",
   port: 1433,
-  server: "homnaydocgi.database.windows.net",
+  server: "homnaydocgi-db.database.windows.net",
 };
 const DATABASE_SERVER_CONFIG_PRO = {
   user: "taibn1",
@@ -50,14 +50,15 @@ const DATABASE_SERVER_CONFIG_PRO = {
 const DATABASE_SERVER_LOCAL = {
   user: "LAP13002",
   password: "Aa123456",
-  server: "LAP13002\\SQLEXPRESS",
+  // server: 'LAP13002\\SQLEXPRESS',
+  server: "localhost",
   database: "homnaydocgi-dev",
   port: 1433,
   options: {
-    trustedConnection: true
+    trustedConnection: true,
   },
-  driver: 'msnodesqlv8',
-}
+  driver: "msnodesqlv8",
+};
 const FACEBOOK_DEV = {
   VALIDATION_TOKEN: "TokenTuyChon",
   PAGE_ACCESS_TOKEN:
