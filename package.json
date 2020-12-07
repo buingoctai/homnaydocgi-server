@@ -20,6 +20,8 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.1.1",
     "facebook-chat-api": "^1.8.0",
+    "ffmpeg-static": "^4.2.7",
+    "fluent-ffmpeg": "^2.1.2",
     "googleapis": "39",
     "helmet": "^3.21.3",
     "jsonwebtoken": "^8.5.1",
@@ -30,10 +32,12 @@
     "nodemon": "^2.0.4",
     "prettier": "^2.2.1",
     "python-shell": "^1.0.8",
+    "sanitize-filename": "^1.6.3",
     "superagent": "^5.2.2",
     "tedious": "^8.2.0",
     "uuid": "^7.0.3",
-    "web-push": "^3.4.4"
+    "web-push": "^3.4.4",
+    "ytdl-core": "^4.1.1"
   },
   "engines": {
     "node": "14.4.0"
