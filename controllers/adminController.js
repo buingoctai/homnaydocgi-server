@@ -1,19 +1,22 @@
-const sql = require("mssql");
+const sql = require('mssql');
 // const newsql=require('mssql/msnodesqlv8');
-const uuidv4 = require("uuid/v4");
+const uuidv4 = require('uuid/v4');
 
-const constants = require("../utils/constants");
-const { INSERT_ARTICLE, DELETE_ARTICLES, UPDATE_ARTICLES } = constants;
+const {
+  INSERT_ARTICLE,
+  DELETE_ARTICLES,
+  UPDATE_ARTICLES,
+} = require('../utils/constants');
 
 exports.submitArticle = async (req, res) => {
   const { author, title, content, topic, submitDate, imageUrl } = req.body;
-  const newContent = content.replace(/[#$%^&*()''""-]/g, " ");
-  const newTitle = title.replace(/[#$%^&*()''""-]/g, " ") || "KHÔNG TIÊU ĐỀ";
+  const newContent = content.replace(/[#$%^&*()''""-]/g, ' ');
+  const newTitle = title.replace(/[#$%^&*()''""-]/g, ' ') || 'KHÔNG TIÊU ĐỀ';
   const newImageUrl =
     imageUrl ||
-    "https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/70930564_923020218065096_7174011323368341504_n.jpg?_nc_cat=100&ccb=2&_nc_sid=174925&_nc_ohc=JebNwt_2DD4AX9D4CiP&_nc_ht=scontent.fsgn5-5.fna&oh=5c30346edb198746933fca88f14fbd63&oe=5FE85A14";
-  const subContentList = newContent.split(".");
-  let brief = "";
+    'https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/70930564_923020218065096_7174011323368341504_n.jpg?_nc_cat=100&ccb=2&_nc_sid=174925&_nc_ohc=JebNwt_2DD4AX9D4CiP&_nc_ht=scontent.fsgn5-5.fna&oh=5c30346edb198746933fca88f14fbd63&oe=5FE85A14';
+  const subContentList = newContent.split('.');
+  let brief = '';
 
   if (subContentList.length < 2) {
     brief = subContentList[0];
@@ -24,17 +27,17 @@ exports.submitArticle = async (req, res) => {
   const id = uuidv4();
   const request = new sql.Request();
   request.query(
-    INSERT_ARTICLE.replace("IdValue", id)
-      .replace("AuthorValue", author)
-      .replace("TitleValue", newTitle)
-      .replace("ContentValue", newContent)
-      .replace("TopicValue", topic)
-      .replace("SubmitDateValue", submitDate)
-      .replace("ImageValue", newImageUrl)
-      .replace("BriefValue", brief),
+    INSERT_ARTICLE.replace('IdValue', id)
+      .replace('AuthorValue', author)
+      .replace('TitleValue', newTitle)
+      .replace('ContentValue', newContent)
+      .replace('TopicValue', topic)
+      .replace('SubmitDateValue', submitDate)
+      .replace('ImageValue', newImageUrl)
+      .replace('BriefValue', brief),
     (err) => {
       if (err) {
-        console.log("submitArticle err", err);
+        console.log('submitArticle err', err);
         res.statusCode = 500;
         res.json(err);
       } else {
@@ -50,9 +53,9 @@ exports.deletePosts = async (req, res) => {
   let stringList = `'${items[0]}'`;
 
   for (i = 1; i < items.length; i++) {
-    stringList = stringList.concat(",", `'${items[i]}'`);
+    stringList = stringList.concat(',', `'${items[i]}'`);
   }
-  request.query(DELETE_ARTICLES.replace("LIST_ID", stringList), (err) => {
+  request.query(DELETE_ARTICLES.replace('LIST_ID', stringList), (err) => {
     if (err) {
       res.statusCode = 500;
       res.json(err);
@@ -65,8 +68,8 @@ exports.updatePosts = async (req, res) => {
   const { items, data } = req.body;
   const request = new sql.Request();
   const { author, title, content, topic, submitDate, imageUrl } = data;
-  const subContentList = content.split(".");
-  let brief = "";
+  const subContentList = content.split('.');
+  let brief = '';
 
   if (subContentList.length < 2) {
     brief = subContentList[0];
@@ -77,14 +80,14 @@ exports.updatePosts = async (req, res) => {
   const updateFunc = new Promise((resolve, reject) => {
     for (let i = 0; i < items.length; i++) {
       request.query(
-        UPDATE_ARTICLES.replace("AuthorValue", author)
-          .replace("TitleValue", title)
-          .replace("ContentValue", content)
-          .replace("TopicValue", topic)
-          .replace("SubmitDateValue", submitDate)
-          .replace("ImageUrlValue", imageUrl)
-          .replace("BriefValue", brief)
-          .replace("IdValue", `'${items[i]}'`),
+        UPDATE_ARTICLES.replace('AuthorValue', author)
+          .replace('TitleValue', title)
+          .replace('ContentValue', content)
+          .replace('TopicValue', topic)
+          .replace('SubmitDateValue', submitDate)
+          .replace('ImageUrlValue', imageUrl)
+          .replace('BriefValue', brief)
+          .replace('IdValue', `'${items[i]}'`),
         (err) => {
           if (err) {
             reject(err);
@@ -92,7 +95,7 @@ exports.updatePosts = async (req, res) => {
         }
       );
       if (i === items.length - 1) {
-        resolve("");
+        resolve('');
       }
     }
   });

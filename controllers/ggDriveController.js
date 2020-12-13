@@ -1,20 +1,22 @@
-const fs = require("fs");
-const path = require("path");
-const readline = require("readline");
-const { google } = require("googleapis");
-const ytdl = require("ytdl-core");
-const ffmpeg = require("fluent-ffmpeg");
-const ffmpegPath = require("ffmpeg-static");
-const sanitize = require("sanitize-filename");
+const fs = require('fs');
+const sql = require('mssql');
+const path = require('path');
+const readline = require('readline');
+const { google } = require('googleapis');
+const ytdl = require('ytdl-core');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('ffmpeg-static');
+const sanitize = require('sanitize-filename');
+const { INSERT_AUDIO } = require('../utils/constants');
 
 let auth;
-const TOKEN_PATH = "./config/token.json";
-const SCOPES = ["https://www.googleapis.com/auth/drive"];
+const TOKEN_PATH = './config/token.json';
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
 
 const startAuth = () => {
   return new Promise((resolve, reject) => {
-    fs.readFile("./config/credentials.json", (err, content) => {
-      if (err) return console.log("Error loading client secret file:", err);
+    fs.readFile('./config/credentials.json', (err, content) => {
+      if (err) return console.log('Error loading client secret file:', err);
       // Authorize a client with credentials, then call the Google Drive API.
       getAuth(JSON.parse(content), resolve, reject);
     });
@@ -31,7 +33,7 @@ function getAuth(credentials, resolve, reject) {
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    console.log("token", token);
+    console.log('token', token);
     if (err) return getAccessToken(oAuth2Client);
     oAuth2Client.setCredentials(JSON.parse(token));
     auth = oAuth2Client;
@@ -41,23 +43,23 @@ function getAuth(credentials, resolve, reject) {
 
 function getAccessToken(oAuth2Client) {
   const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
+    access_type: 'offline',
     scope: SCOPES,
   });
-  console.log("Authorize this app by visiting this url:", authUrl);
+  console.log('Authorize this app by visiting this url:', authUrl);
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-  rl.question("Enter the code from that page here: ", (code) => {
+  rl.question('Enter the code from that page here: ', (code) => {
     rl.close();
     oAuth2Client.getToken(code, (err, token) => {
-      if (err) return console.error("Error retrieving access token", err);
+      if (err) return console.error('Error retrieving access token', err);
       oAuth2Client.setCredentials(token);
       // Store the token to disk for later program executions
       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
         if (err) return console.error(err);
-        console.log("Token stored to", TOKEN_PATH);
+        console.log('Token stored to', TOKEN_PATH);
       });
       auth = authoAuth2Client;
     });
@@ -76,7 +78,7 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
   };
 
   await startAuth();
-  const drive = google.drive({ version: "v3", auth });
+  const drive = google.drive({ version: 'v3', auth });
 
   return new Promise((resolve, reject) => {
     drive.files.create(
@@ -88,6 +90,12 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
         if (err) {
           reject({ error: err.message });
         } else {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(err);
+              return;
+            }
+          });
           resolve({ id: file.data.id, name: file.data.name });
         }
       }
@@ -97,7 +105,7 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
 
 const getAllItem = (drive, whatQuery) => {
   return new Promise((resolve, reject) => {
-    const query = { q: whatQuery, spaces: "drive" };
+    const query = { q: whatQuery, spaces: 'drive' };
 
     drive.files.list(query, (err, res) => {
       if (err) {
@@ -112,24 +120,24 @@ const getAllItem = (drive, whatQuery) => {
 
 const downloadFiles = (drive, id) => {
   return drive.files
-    .get({ fileId: id, alt: "media" }, { responseType: "stream" })
+    .get({ fileId: id, alt: 'media' }, { responseType: 'stream' })
     .then((res) => {
       return new Promise((resolve, reject) => {
-        const filePath = "./resource/test.mp3";
+        const filePath = './resource/test.mp3';
         console.log(`writing to ${filePath}`);
         const dest = fs.createWriteStream(filePath);
         let progress = 0;
 
         res.data
-          .on("end", () => {
-            console.log("Done downloading file.");
+          .on('end', () => {
+            console.log('Done downloading file.');
             resolve(filePath);
           })
-          .on("error", (err) => {
-            console.error("Error downloading file.");
+          .on('error', (err) => {
+            console.error('Error downloading file.');
             reject(err);
           })
-          .on("data", (d) => {
+          .on('data', (d) => {
             progress += d.length;
             if (process.stdout.isTTY) {
               process.stdout.clearLine();
@@ -147,7 +155,7 @@ exports.getAllAudioBook = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: "v3", auth });
+    const drive = google.drive({ version: 'v3', auth });
     const folders = await getAllItem(
       drive,
       "mimeType = 'application/vnd.google-apps.folder'"
@@ -169,9 +177,9 @@ exports.getAudioBook = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: "v3", auth });
-    const query = "'idValue' in parents".replace("idValue", id);
-    console.log("query", query);
+    const drive = google.drive({ version: 'v3', auth });
+    const query = "'idValue' in parents".replace('idValue', id);
+    console.log('query', query);
     const folders = await getAllItem(drive, query);
     const newFolders = folders.map((item) => {
       return {
@@ -188,40 +196,48 @@ exports.getAudioBook = async (req, res) => {
 };
 const downloadVideo = async (url) => {
   const {
-    videoDetails: { title },
-  } = await ytdl.getInfo(url); // co the get cac video lien quan de de xuat
-  const newTitle = title.replace(/[#$%^&*()''""|]/g, "-");
-  const filePath = path.join("resource", `${newTitle}.mp4`);
-  const videoObject = ytdl(url, { filter: "audioonly" });
+    videoDetails: { title, videoId },
+  } = await ytdl.getInfo(url);
+  const xxxx = await ytdl.getInfo(url);
+  console.log('xxxx', xxxx);
+  // co the get cac video lien quan de de xuat
+  const newTitle = title.replace(/[#$%^&*()''""|]/g, '-');
+  const filePath = path.join('resource', `${newTitle}.mp4`);
+  const videoObject = ytdl(url, { filter: 'audioonly' });
 
   return new Promise((resolve, reject) => {
     videoObject
       .pipe(fs.createWriteStream(filePath))
-      .on("error", (err) => {
+      .on('error', (err) => {
         reject(err);
       })
-      .on("finish", () => {
+      .on('finish', () => {
         resolve({
           filePath,
-          folderPath: "resource",
+          folderPath: 'resource',
           title: `${newTitle}.mp3`,
+          videoId,
         });
       });
   });
 };
 
 const convertMp4ToMp3 = (source) => {
+  const newFilePath = path.join('resource', `${source.title}.mp3`);
+
   return new Promise((resolve, reject) => {
     ffmpeg(source.filePath)
       .setFfmpegPath(ffmpegPath)
-      .format("mp3")
-      .output(
-        fs.createWriteStream(
-          path.join(source.folderPath, sanitize(source.title))
-        )
-      )
-      .on("end", () => {
-        resolve("create mp3 success");
+      .format('mp3')
+      .output(fs.createWriteStream(newFilePath))
+      .on('end', () => {
+        fs.unlink(source.filePath, (err) => {
+          if (err) {
+            console.error('convertMp4ToMp3 ', err);
+            return;
+          }
+        });
+        resolve(newFilePath);
       })
       .run();
   });
@@ -231,15 +247,23 @@ exports.youtube2mp3 = async (req, res) => {
 
   try {
     const source = await downloadVideo(url);
-    await convertMp4ToMp3(source);
+    const filePath = await convertMp4ToMp3(source);
 
     const fileInfor = await uploadFile({
-      filePath: source.filePath,
+      filePath: filePath,
       fileName: source.title,
-      fileType: "audio/mp3",
+      fileType: 'audio/mp3',
       folderId: id,
     });
-    res.json(fileInfor);
+    const output = { ...fileInfor, videoId: source.videoId };
+    const request = new sql.Request();
+
+    request.query(
+      INSERT_AUDIO.replace('idValue', fileInfor.id)
+        .replace('parentValue', id)
+        .replace('videoIdValue', source.videoId)
+    );
+    res.json(output);
   } catch (err) {
     res.statusCode = 500;
     res.json(err);
@@ -251,7 +275,7 @@ exports.createFolder = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: "v3", auth });
+    const drive = google.drive({ version: 'v3', auth });
     const folders = await getAllItem(
       drive,
       "mimeType = 'application/vnd.google-apps.folder'"
@@ -263,11 +287,11 @@ exports.createFolder = async (req, res) => {
       newFolders.filter((item) => item.name === name).length > 0;
 
     if (isExistedFolder) {
-      res.json({ error: "INVALID FOLDER NAME" });
+      res.json({ error: 'INVALID FOLDER NAME' });
     } else {
       const fileMetadata = {
         name,
-        mimeType: "application/vnd.google-apps.folder",
+        mimeType: 'application/vnd.google-apps.folder',
       };
 
       drive.files.create(
