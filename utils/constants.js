@@ -4,37 +4,29 @@ const INSERT_USER_DATA =
 const USER_FIND = "SELECT * FROM Users WHERE Id='IdValue'";
 const INSERT_ARTICLE =
   "INSERT INTO Articles (Id, Author, Title, Content, Topic,SubmitDate, ImageUrl,Brief) VALUES ('IdValue',N'AuthorValue',N'TitleValue',N'ContentValue','TopicValue','SubmitDateValue','ImageValue',N'BriefValue')";
-const FIND_MAIN_ARTICLE =
-  'SELECT Id,Author,Title,Brief,ImageUrl,SubmitDate FROM Articles ORDER BY SubmitDate DESC';
+const FIND_MAIN_ARTICLE = 'SELECT Id,Author,Title,Brief,ImageUrl,SubmitDate FROM Articles ORDER BY SubmitDate DESC';
 const FIND_FEATURED_ARTICLE =
   "SELECT TOP 1 Id,Author,Title,Brief,Topic,ImageUrl,SubmitDate FROM Articles WHERE Articles.Topic='LabelValue' ORDER BY SubmitDate DESC";
 const FIND_ARTICLE_AS_PAGE =
   'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
 const COUNT_TOTAL_ARTICLE = 'SELECT COUNT(*) FROM Articles';
-const INSERT_PERSONALIZED_INFORMS =
-  "INSERT INTO PersonalizedInforms (UserId,TechList,AddList) VALUES ('UserIdValue','TechListValue','AddListValue')";
-const COUNT_USERNAME_OR_FBURL =
-  "SELECT COUNT(*) AS TOTAL FROM Users WHERE Users.UserName='UserNameValue' OR Users.FbUrl='FbUrlValue'";
+const INSERT_PERSONALIZED_INFORMS = "INSERT INTO PersonalizedInforms (UserId,TechList,AddList) VALUES ('UserIdValue','TechListValue','AddListValue')";
+const COUNT_USERNAME_OR_FBURL = "SELECT COUNT(*) AS TOTAL FROM Users WHERE Users.UserName='UserNameValue' OR Users.FbUrl='FbUrlValue'";
 const DELETE_ARTICLES = 'DELETE FROM Articles WHERE Id IN (LIST_ID)';
 const UPDATE_ARTICLES =
   "UPDATE Articles SET Author=N'AuthorValue',Title=N'TitleValue',Content=N'ContentValue',Topic='TopicValue',SubmitDate='SubmitDateValue',ImageUrl='ImageUrlValue',Brief=N'BriefValue'  WHERE Id=IdValue";
 const FIND_DETAIL_POST = "SELECT Content FROM Articles WHERE Id='IdValue'";
 const FIND_ALL_TOPIC = 'SELECT Topic FROM Articles';
-const FIND_ARTICLE_AS_TOPIC =
-  "SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Articles.Topic='LabelValue'";
+const FIND_ARTICLE_AS_TOPIC = "SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Articles.Topic='LabelValue'";
 const SEARCH_ARTICLES =
   "SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Title LIKE '%titleValue%' OR Author LIKE '%authorValue%' OR Content LIKE '%contentValue%'";
-const FIND_ARTICLES_BELONG_IN_LIST_ID =
-  'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Id IN (LIST_ID)';
+const FIND_ARTICLES_BELONG_IN_LIST_ID = 'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Id IN (LIST_ID)';
 const FIND_ALL_ARTICLES_CRAWL =
   'SELECT * FROM CRAWLER_ARTICLE ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
 const COUNT_TOTAL_ARTICLE_CRAWL = 'SELECT COUNT(*) FROM CRAWLER_ARTICLE';
-const INSER_ARTICLE_CRAWL =
-  "INSERT INTO CRAWLER_AUDIO (ArticleId, AudioUrl) VALUES ('ArticleIdValue','AudioUrlValue')";
-const FIND_AUDIO_ARTICLE_CRAWL =
-  "SELECT AudioUrl FROM CRAWLER_AUDIO WHERE ArticleId='IdValue'";
-const INSERT_AUDIO =
-  "INSERT INTO Audio (id,parent,videoId) VALUES ('idValue','parentValue','videoIdValue')";
+const INSER_ARTICLE_CRAWL = "INSERT INTO CRAWLER_AUDIO (ArticleId, AudioUrl) VALUES ('ArticleIdValue','AudioUrlValue')";
+const FIND_AUDIO_ARTICLE_CRAWL = "SELECT AudioUrl FROM CRAWLER_AUDIO WHERE ArticleId='IdValue'";
+const INSERT_AUDIO = "INSERT INTO Audio (id,parent,videoId) VALUES ('idValue','parentValue','videoIdValue')";
 const SEARCH_THUMB = "SELECT * FROM Audio WHERE parent='parentValue'";
 const DATABASE_SERVER_CONFIG_DEV = {
   user: 'taibn',
@@ -91,8 +83,7 @@ const ERROR_CODE = {
  * Notification
  */
 const GET_ALL_SUBSCRITION = 'SELECT Subscription FROM Subscription';
-const INSERT_SUBSCRITION =
-  "INSERT INTO Subscription (id, subscription) VALUES ('idValue','subscriptionValue')";
+const INSERT_SUBSCRITION = "INSERT INTO Subscription (id, subscription) VALUES ('idValue','subscriptionValue')";
 const DELETE_SUBSCRIPTION = "DELETE FROM Subscription WHERE id='idValue'";
 module.exports = {
   PYTHON_SERVER_URL,

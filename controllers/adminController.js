@@ -2,11 +2,7 @@ const sql = require('mssql');
 // const newsql=require('mssql/msnodesqlv8');
 const uuidv4 = require('uuid/v4');
 
-const {
-  INSERT_ARTICLE,
-  DELETE_ARTICLES,
-  UPDATE_ARTICLES,
-} = require('../utils/constants');
+const { INSERT_ARTICLE, DELETE_ARTICLES, UPDATE_ARTICLES } = require('../utils/constants');
 
 exports.submitArticle = async (req, res) => {
   const { author, title, content, topic, submitDate, imageUrl } = req.body;

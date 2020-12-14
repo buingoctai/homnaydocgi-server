@@ -16,10 +16,7 @@ exports.getThumb = async (req, res) => {
 
     let output = {};
     for (let i = 0; i < audioList.length; i++) {
-      const thumb = 'https://img.youtube.com/vi/videoId/mqdefault.jpg'.replace(
-        'videoId',
-        audioList[i].videoId
-      );
+      const thumb = 'https://img.youtube.com/vi/videoId/mqdefault.jpg'.replace('videoId', audioList[i].videoId);
       output[audioList[i].id] = thumb;
     }
     res.json(output);

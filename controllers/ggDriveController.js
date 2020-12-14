@@ -25,11 +25,7 @@ const startAuth = () => {
 
 function getAuth(credentials, resolve, reject) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
-  const oAuth2Client = new google.auth.OAuth2(
-    client_id,
-    client_secret,
-    redirect_uris[0]
-  );
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
@@ -78,7 +74,10 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
   };
 
   await startAuth();
-  const drive = google.drive({ version: 'v3', auth });
+  const drive = google.drive({
+    version: 'v3',
+    auth,
+  });
 
   return new Promise((resolve, reject) => {
     drive.files.create(
@@ -96,7 +95,10 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
               return;
             }
           });
-          resolve({ id: file.data.id, name: file.data.name });
+          resolve({
+            id: file.data.id,
+            name: file.data.name,
+          });
         }
       }
     );
@@ -105,7 +107,10 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
 
 const getAllItem = (drive, whatQuery) => {
   return new Promise((resolve, reject) => {
-    const query = { q: whatQuery, spaces: 'drive' };
+    const query = {
+      q: whatQuery,
+      spaces: 'drive',
+    };
 
     drive.files.list(query, (err, res) => {
       if (err) {
@@ -119,35 +124,33 @@ const getAllItem = (drive, whatQuery) => {
 };
 
 const downloadFiles = (drive, id) => {
-  return drive.files
-    .get({ fileId: id, alt: 'media' }, { responseType: 'stream' })
-    .then((res) => {
-      return new Promise((resolve, reject) => {
-        const filePath = './resource/test.mp3';
-        console.log(`writing to ${filePath}`);
-        const dest = fs.createWriteStream(filePath);
-        let progress = 0;
+  return drive.files.get({ fileId: id, alt: 'media' }, { responseType: 'stream' }).then((res) => {
+    return new Promise((resolve, reject) => {
+      const filePath = './resource/test.mp3';
+      console.log(`writing to ${filePath}`);
+      const dest = fs.createWriteStream(filePath);
+      let progress = 0;
 
-        res.data
-          .on('end', () => {
-            console.log('Done downloading file.');
-            resolve(filePath);
-          })
-          .on('error', (err) => {
-            console.error('Error downloading file.');
-            reject(err);
-          })
-          .on('data', (d) => {
-            progress += d.length;
-            if (process.stdout.isTTY) {
-              process.stdout.clearLine();
-              process.stdout.cursorTo(0);
-              process.stdout.write(`Downloaded ${progress} bytes`);
-            }
-          })
-          .pipe(dest);
-      });
+      res.data
+        .on('end', () => {
+          console.log('Done downloading file.');
+          resolve(filePath);
+        })
+        .on('error', (err) => {
+          console.error('Error downloading file.');
+          reject(err);
+        })
+        .on('data', (d) => {
+          progress += d.length;
+          if (process.stdout.isTTY) {
+            process.stdout.clearLine();
+            process.stdout.cursorTo(0);
+            process.stdout.write(`Downloaded ${progress} bytes`);
+          }
+        })
+        .pipe(dest);
     });
+  });
 };
 
 exports.getAllAudioBook = async (req, res) => {
@@ -155,17 +158,23 @@ exports.getAllAudioBook = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: 'v3', auth });
-    const folders = await getAllItem(
-      drive,
-      "mimeType = 'application/vnd.google-apps.folder'"
-    );
+    const drive = google.drive({
+      version: 'v3',
+      auth,
+    });
+    const folders = await getAllItem(drive, "mimeType = 'application/vnd.google-apps.folder'");
     const newFolders = folders.map((item) => {
-      return { id: item.id, name: item.name };
+      return {
+        id: item.id,
+        name: item.name,
+      };
     });
     const filter = newFolders.filter((item) => item.name.includes(searchTxt));
 
-    res.json({ data: filter, totalRecord: filter.length });
+    res.json({
+      data: filter,
+      totalRecord: filter.length,
+    });
   } catch (err) {
     res.statusCode = 500;
     res.json(err);
@@ -177,7 +186,10 @@ exports.getAudioBook = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: 'v3', auth });
+    const drive = google.drive({
+      version: 'v3',
+      auth,
+    });
     const query = "'idValue' in parents".replace('idValue', id);
     console.log('query', query);
     const folders = await getAllItem(drive, query);
@@ -203,7 +215,9 @@ const downloadVideo = async (url) => {
   // co the get cac video lien quan de de xuat
   const newTitle = title.replace(/[#$%^&*()''""|]/g, '-');
   const filePath = path.join('resource', `${newTitle}.mp4`);
-  const videoObject = ytdl(url, { filter: 'audioonly' });
+  const videoObject = ytdl(url, {
+    filter: 'audioonly',
+  });
 
   return new Promise((resolve, reject) => {
     videoObject
@@ -255,14 +269,13 @@ exports.youtube2mp3 = async (req, res) => {
       fileType: 'audio/mp3',
       folderId: id,
     });
-    const output = { ...fileInfor, videoId: source.videoId };
+    const output = {
+      ...fileInfor,
+      videoId: source.videoId,
+    };
     const request = new sql.Request();
 
-    request.query(
-      INSERT_AUDIO.replace('idValue', fileInfor.id)
-        .replace('parentValue', id)
-        .replace('videoIdValue', source.videoId)
-    );
+    request.query(INSERT_AUDIO.replace('idValue', fileInfor.id).replace('parentValue', id).replace('videoIdValue', source.videoId));
     res.json(output);
   } catch (err) {
     res.statusCode = 500;
@@ -275,19 +288,23 @@ exports.createFolder = async (req, res) => {
 
   try {
     await startAuth();
-    const drive = google.drive({ version: 'v3', auth });
-    const folders = await getAllItem(
-      drive,
-      "mimeType = 'application/vnd.google-apps.folder'"
-    );
-    const newFolders = folders.map((item) => {
-      return { id: item.id, name: item.name };
+    const drive = google.drive({
+      version: 'v3',
+      auth,
     });
-    const isExistedFolder =
-      newFolders.filter((item) => item.name === name).length > 0;
+    const folders = await getAllItem(drive, "mimeType = 'application/vnd.google-apps.folder'");
+    const newFolders = folders.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+      };
+    });
+    const isExistedFolder = newFolders.filter((item) => item.name === name).length > 0;
 
     if (isExistedFolder) {
-      res.json({ error: 'INVALID FOLDER NAME' });
+      res.json({
+        error: 'INVALID FOLDER NAME',
+      });
     } else {
       const fileMetadata = {
         name,
@@ -303,7 +320,10 @@ exports.createFolder = async (req, res) => {
             res.statusCode = 500;
             res.json(err);
           } else {
-            res.json({ id: file.data.id, name: file.data.name });
+            res.json({
+              id: file.data.id,
+              name: file.data.name,
+            });
           }
         }
       );
@@ -313,3 +333,4 @@ exports.createFolder = async (req, res) => {
     res.json(err);
   }
 };
+const check = 'aaaaa';

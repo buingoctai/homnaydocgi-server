@@ -55,11 +55,6 @@
     lodash.camelcase "^4.3.0"
     protobufjs "^6.8.6"
 
-"@js-joda/core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@js-joda/core/-/core-2.0.0.tgz#e9a351ee6feb91262770e2a3d085aa0219ad6afb"
-  integrity sha512-OWm/xa9O9e4ugzNHoRT3IsXZZYfaV6Ia1aRwctOmCQ2GYWMnhKBzMC1WomqCh/oGxEZKNtPy5xv5//VIAOgMqw==
-
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -2753,7 +2748,7 @@ node-forge@^0.9.0:
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.9.2.tgz#b35a44c28889b2ea55cabf8c79e3563f9676190a"
   integrity sha512-naKSScof4Wn+aoHU6HBsifh92Zeicm1GDQKd1vp3Y/kOi8ub0DozCa9KpvYNCXslFHYRmLNiqRopGdTGwNLpNw==
 
-nodemon@^2.0.4:
+nodemon@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-2.0.6.tgz#1abe1937b463aaf62f0d52e2b7eaadf28cc2240d"
   integrity sha512-4I3YDSKXg6ltYpcnZeHompqac4E6JeAMpGm8tJnB9Y3T0ehasLa4139dJOcCrB93HHrUMsCrKtoAlXTqT5n4AQ==
@@ -3001,7 +2996,7 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prettier@^2.2.1:
+prettier@2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
   integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
@@ -3576,22 +3571,6 @@ tedious@^6.6.2:
     native-duplexpair "^1.0.0"
     punycode "^2.1.0"
     readable-stream "^3.4.0"
-    sprintf-js "^1.1.2"
-
-tedious@^8.2.0:
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/tedious/-/tedious-8.3.1.tgz#f169699d26e20676f596740ff46012ed14d8f1b1"
-  integrity sha512-HraoUHvXbbVrdLcYSh1KBiffqvtuXubEe8zmuKFdWAEwTUi3fS3swM1HdSq5tq/Q+A0NowYf/qvkOM4qoBpNRw==
-  dependencies:
-    "@azure/ms-rest-nodeauth" "2.0.2"
-    "@js-joda/core" "^2.0.0"
-    bl "^3.0.0"
-    depd "^2.0.0"
-    iconv-lite "^0.5.0"
-    jsbi "^3.1.1"
-    native-duplexpair "^1.0.0"
-    punycode "^2.1.0"
-    readable-stream "^3.6.0"
     sprintf-js "^1.1.2"
 
 term-size@^2.1.0:

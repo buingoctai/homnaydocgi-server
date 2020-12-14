@@ -4,13 +4,10 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+
 const app = express();
 const constants = require('./utils/constants');
-const {
-  DATABASE_SERVER_CONFIG_DEV,
-  DATABASE_SERVER_CONFIG_PRO,
-  DATABASE_SERVER_LOCAL,
-} = constants;
+const { DATABASE_SERVER_CONFIG_DEV, DATABASE_SERVER_CONFIG_PRO, DATABASE_SERVER_LOCAL } = constants;
 app.options('*', cors());
 app.use(cors());
 
