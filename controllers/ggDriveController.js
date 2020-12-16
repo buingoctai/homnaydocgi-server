@@ -215,7 +215,9 @@ const downloadVideo = async (url) => {
   console.log('###### Log: downloadVideo func, videoDetails', videoInfor.videoDetails);
   // co the get cac video lien quan de de xuat
   const newTitle = title.replace(/[#$%^&*()''""|]/g, '-');
-  const filePath = path.join('resource', `${newTitle}.mp4`);
+  // const filePath = path.join('resource', `${newTitle}.mp4`);
+  const filePath = path.join(appRoot, `resource/${newTitle}.mp4`);
+  console.log('###### Log: downloadVideo func, filePath', filePath);
   const videoObject = ytdl(url, {
     filter: 'audioonly',
   });
@@ -239,7 +241,9 @@ const downloadVideo = async (url) => {
 };
 
 const convertMp4ToMp3 = (source) => {
-  const newFilePath = path.join('resource', `${source.title}.mp3`);
+  // const newFilePath = path.join('resource', `${source.title}.mp3`);
+  const newFilePath = path.join(appRoot, `resource/${source.title}.mp3`);
+  console.log('###### Log: convertMp4ToMp3 func, newFilePath', newFilePath);
 
   return new Promise((resolve, reject) => {
     ffmpeg(source.filePath)

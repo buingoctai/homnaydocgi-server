@@ -46,6 +46,8 @@ app.use('/api', limiter); // Limit request from the same API
 //       res.json(err);
 //     });
 // });
+const path = require('path');
+global.appRoot = path.resolve(__dirname);
 app.use('/', (req, res, next) => {
   sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
     if (err) {
