@@ -95,6 +95,7 @@ const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
               return;
             }
           });
+          console.log(`###### Log: uploadFile func, Upload file successfully`);
           resolve({
             id: file.data.id,
             name: file.data.name,
@@ -210,8 +211,8 @@ const downloadVideo = async (url) => {
   const {
     videoDetails: { title, videoId },
   } = await ytdl.getInfo(url);
-  const xxxx = await ytdl.getInfo(url);
-  console.log('xxxx', xxxx);
+  const videoInfor = await ytdl.getInfo(url);
+  console.log('###### Log: downloadVideo func, videoDetails', videoInfor.videoDetails);
   // co the get cac video lien quan de de xuat
   const newTitle = title.replace(/[#$%^&*()''""|]/g, '-');
   const filePath = path.join('resource', `${newTitle}.mp4`);
@@ -226,6 +227,7 @@ const downloadVideo = async (url) => {
         reject(err);
       })
       .on('finish', () => {
+        console.log(`###### Log: downloadVideo func, download ${title} successfully`);
         resolve({
           filePath,
           folderPath: 'resource',
@@ -251,6 +253,7 @@ const convertMp4ToMp3 = (source) => {
             return;
           }
         });
+        console.log(`###### Log: convertMp4ToMp3 func, ConvertMp4ToMp3 successfully`);
         resolve(newFilePath);
       })
       .run();
