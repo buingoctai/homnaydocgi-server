@@ -4,21 +4,43 @@
 
 ## Install packages:
 
-- yarn or npm install
+```
+ yarn or npm install
+```
 
 ## Run app:
 
-- Restart on changes: yarn dev
-- Without restart on changes: yarn start
+- Restart on changes:
+
+```
+yarn dev
+```
+
+- Without restart on changes:
+
+```
+yarn start
+```
 
 ## Formating Code:
 
-- yarn format
+```
+yarn format
+```
 
 ## Heorku:
 
-- Logs: heroku logs --tail --app homnaydocgi-server
-- Restart app: heroku restart -a homnaydocgi-server
+- Logs:
+
+```
+heroku logs --tail --app homnaydocgi-server
+```
+
+- Restart app:
+
+```
+heroku restart -a homnaydocgi-server
+```
 
 ## Git cheat sheet
 
