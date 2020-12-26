@@ -28,20 +28,6 @@ yarn start
 yarn format
 ```
 
-## Heorku:
-
-- Logs:
-
-```
-heroku logs --tail --app homnaydocgi-server
-```
-
-- Restart app:
-
-```
-heroku restart -a homnaydocgi-server
-```
-
 ## Git cheat sheet
 
 ![Part1](public/git-command-part1.png)
