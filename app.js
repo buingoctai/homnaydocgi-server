@@ -50,13 +50,13 @@ global.appRoot = path.resolve(__dirname);
 //     });
 // });
 app.use('/', (req, res, next) => {
-  console.log('run connection db');
   sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
     if (err) {
       console.log('err', err);
       res.statusCode = 500;
       res.json(err);
     } else {
+      console.log('Connect DB Succesfully');
       next();
     }
   });

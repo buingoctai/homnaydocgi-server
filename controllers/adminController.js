@@ -8,9 +8,7 @@ exports.submitArticle = async (req, res) => {
   const { author, title, content, topic, submitDate, imageUrl } = req.body;
   const newContent = content.replace(/[#$%^&*()''""-]/g, ' ');
   const newTitle = title.replace(/[#$%^&*()''""-]/g, ' ') || 'KHÔNG TIÊU ĐỀ';
-  const newImageUrl =
-    imageUrl ||
-    'https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/70930564_923020218065096_7174011323368341504_n.jpg?_nc_cat=100&ccb=2&_nc_sid=174925&_nc_ohc=JebNwt_2DD4AX9D4CiP&_nc_ht=scontent.fsgn5-5.fna&oh=5c30346edb198746933fca88f14fbd63&oe=5FE85A14';
+  const newImageUrl = imageUrl || 'https://homnaydocgi-storage.nyc3.digitaloceanspaces.com/placeholder.jpg';
   const subContentList = newContent.split('.');
   let brief = '';
 
