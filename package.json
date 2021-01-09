@@ -24,10 +24,12 @@
     "jsonwebtoken": "^8.5.1",
     "mocha": "^7.1.2",
     "morgan": "^1.10.0",
-    "mssql": "^6.2.0",
+    "msnodesqlv8": "^2.0.9",
+    "mssql": "^6.3.1",
     "python-shell": "^1.0.8",
     "sanitize-filename": "^1.6.3",
     "superagent": "^5.2.2",
+    "tedious": "^9.2.3",
     "uuid": "^7.0.3",
     "web-push": "^3.4.4",
     "ytdl-core": "^4.1.1"

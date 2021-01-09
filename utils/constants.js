@@ -43,16 +43,15 @@ const DATABASE_SERVER_CONFIG_PRO = {
   server: 'homnaydocgi.database.windows.net',
 };
 const DATABASE_SERVER_LOCAL = {
-  user: 'LAP13002',
-  password: 'Aa123456',
-  // server: 'LAP13002\\SQLEXPRESS',
+  user: 'sa',
+  password: 'LTD1996@tai',
   server: 'localhost',
   database: 'homnaydocgi-dev',
-  port: 1433,
-  options: {
-    trustedConnection: true,
-  },
-  driver: 'msnodesqlv8',
+  // port: 1433,
+  // dialect: 'mssql',
+  // dialectOptions: {
+  //   instanceName: 'SQLEXPRESS',
+  // },
 };
 const FACEBOOK_DEV = {
   VALIDATION_TOKEN: 'TokenTuyChon',

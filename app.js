@@ -1,5 +1,6 @@
-// const sql = require('mssql/msnodesqlv8');
+// const sql = require('msnodesqlv8');
 const sql = require('mssql');
+var Connection = require('tedious').Connection;
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -31,6 +32,8 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter); // Limit request from the same API
 
+const path = require('path');
+global.appRoot = path.resolve(__dirname);
 // CONNECT TO DAT5ABASE SERVER
 // app.use('/', (req, res, next) => {
 //   const pool = new sql.ConnectionPool(DATABASE_SERVER_LOCAL);
@@ -46,9 +49,8 @@ app.use('/api', limiter); // Limit request from the same API
 //       res.json(err);
 //     });
 // });
-const path = require('path');
-global.appRoot = path.resolve(__dirname);
 app.use('/', (req, res, next) => {
+  console.log('run connection db');
   sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
     if (err) {
       console.log('err', err);
@@ -59,6 +61,18 @@ app.use('/', (req, res, next) => {
     }
   });
 });
+// app.use('/', (req, res, next) => {
+//   var connection = new Connection(DATABASE_SERVER_LOCAL);
+//   connection.on('connect', function (err) {
+//     // If no error, then good to proceed.
+//     if (err) {
+//       console.log('err', err);
+//     } else {
+//       console.log('Connected');
+//     }
+//   });
+// });
+
 // ROUTES
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);

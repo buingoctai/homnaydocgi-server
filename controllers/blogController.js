@@ -76,10 +76,11 @@ exports.getAllPost = async (req, res) => {
   let repsonse = {};
   repsonse['data'] = [];
   repsonse['totalRecord'] = 0;
-  const {
+  let {
     paging: { pageIndex, pageSize },
     orderList: { orderType, orderBy },
   } = req.body;
+  let start = null;
 
   const callSearching = new Promise((resolve, reject) => {
     const request = new sql.Request();
@@ -94,17 +95,16 @@ exports.getAllPost = async (req, res) => {
         recordset: [item],
       } = data;
 
-      console.log(
-        'find as page',
-        FIND_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
-          .replace('orderTypeValue', orderType)
-          .replace('startValue', pageSize * (pageIndex - 1))
-          .replace('pageSizeValue', pageSize)
-      );
+      if (pageIndex == -1) {
+        start = 0;
+        pageSize = item[''];
+      } else {
+        start = pageSize * (pageIndex - 1);
+      }
       request.query(
         FIND_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
           .replace('orderTypeValue', orderType)
-          .replace('startValue', pageSize * (pageIndex - 1))
+          .replace('startValue', start)
           .replace('pageSizeValue', pageSize),
         (err, data) => {
           if (err)
