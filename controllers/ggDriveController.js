@@ -212,7 +212,7 @@ const downloadVideo = async (url) => {
     videoDetails: { title, videoId },
   } = await ytdl.getInfo(url);
   const videoInfor = await ytdl.getInfo(url);
-  console.log('###### Log: downloadVideo func, videoDetails', videoInfor.videoDetails);
+  console.log('###### Log: downloadVideo func, videoInfor', videoInfor);
   // co the get cac video lien quan de de xuat
   const newTitle = title.replace(/[#$%^&*()''""|]/g, '-');
   // const filePath = path.join('resource', `${newTitle}.mp4`);
