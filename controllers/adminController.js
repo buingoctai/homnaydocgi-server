@@ -6,7 +6,7 @@ const { INSERT_ARTICLE, DELETE_ARTICLES, UPDATE_ARTICLES } = require('../utils/c
 
 exports.submitArticle = async (req, res) => {
   const { author, title, content, topic, submitDate, imageUrl } = req.body;
-  const newContent = content.replace(/[#$%^&*()''""-]/g, ' ');
+  const newContent = content.replace(/[#$%^&*()''""-``_]/g, ' ');
   const newTitle = title.replace(/[#$%^&*()''""-]/g, ' ') || 'KHÔNG TIÊU ĐỀ';
   const newImageUrl = imageUrl || 'https://homnaydocgi-storage.nyc3.digitaloceanspaces.com/placeholder.jpg';
   const subContentList = newContent.split('.');

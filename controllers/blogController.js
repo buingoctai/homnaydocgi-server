@@ -1,3 +1,4 @@
+const { query } = require('express');
 const sql = require('mssql');
 
 const constants = require('../utils/constants');
@@ -71,7 +72,13 @@ exports.getFeaturedPosts = async (req, res) => {
       res.json(err);
     });
 };
+exports.getAllPostToCache = async (req, res) => {
+  console.log('query', req.query);
+  const paging = { pageIndex: parseInt(req.query.pageIndex), pageSize: parseInt(req.query.pageSize) };
+  const orderList = { orderBy: req.query.orderBy, orderType: req.query.orderType };
 
+  this.getAllPost({ body: { paging, orderList } }, res);
+};
 exports.getAllPost = async (req, res) => {
   let repsonse = {};
   repsonse['data'] = [];
@@ -129,6 +136,9 @@ exports.getAllPost = async (req, res) => {
     });
 };
 
+exports.getDetailPostToCache = async (req, res) => {
+  this.getDetailPost({ body: { id: req.query.id } }, res);
+};
 exports.getDetailPost = async (req, res) => {
   const { id } = req.body;
   const request = new sql.Request();
