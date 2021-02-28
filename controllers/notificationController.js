@@ -15,7 +15,6 @@ exports.saveSubscription = (req, res) => {
   const subscriptionString = JSON.stringify(req.body);
   const idValue = uuidv4();
   const request = new sql.Request();
-
   request.query(INSERT_SUBSCRITION.replace('idValue', idValue).replace('subscriptionValue', subscriptionString), (err) => {
     if (err) {
       res.statusCode = 500;
@@ -47,10 +46,10 @@ const performSendNotification = ({ subscriptionList, title }) => {
       .sendNotification(
         JSON.parse(subscriptionList[index].Subscription),
         JSON.stringify({
-          title: 'Bài viết mới',
+          title: 'Nội dung mới',
           text: title,
           tag: 'new',
-          url: '/home',
+          url: 'https://homnaydocgi-pwa-2rat3.ondigitalocean.app/',
         })
       )
       .catch((err) => {
@@ -60,20 +59,21 @@ const performSendNotification = ({ subscriptionList, title }) => {
 };
 
 exports.sendNotificationToAll = (req, res) => {
+  console.log('req', req);
   const { title } = req.body;
   const request = new sql.Request();
 
   request.query(GET_ALL_SUBSCRITION, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.json(err);
-    }
+    // if (err) {
+    //   res.statusCode = 500;
+    //   res.json(err);
+    // }
     const { recordset: subscriptionList } = data;
 
     performSendNotification({
       subscriptionList,
       title,
     });
-    res.json('');
+    //res.json('');
   });
 };

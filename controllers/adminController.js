@@ -2,6 +2,7 @@ const sql = require('mssql');
 // const newsql=require('mssql/msnodesqlv8');
 const uuidv4 = require('uuid/v4');
 
+const { sendNotificationToAll } = require('./notificationController');
 const { INSERT_ARTICLE, DELETE_ARTICLES, UPDATE_ARTICLES } = require('../utils/constants');
 
 exports.submitArticle = async (req, res) => {
@@ -36,6 +37,7 @@ exports.submitArticle = async (req, res) => {
         res.json(err);
       } else {
         res.json();
+        sendNotificationToAll({ body: { title: newTitle } });
       }
     }
   );
