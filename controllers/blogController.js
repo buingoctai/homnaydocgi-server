@@ -8,6 +8,7 @@ const {
   FIND_ARTICLE_AS_PAGE,
   COUNT_TOTAL_ARTICLE,
   FIND_DETAIL_POST,
+  FIND_FULL_DETAIL_POST,
   FIND_ALL_TOPIC,
   FIND_ARTICLE_AS_TOPIC,
   SEARCH_ARTICLES,
@@ -74,10 +75,56 @@ exports.getFeaturedPosts = async (req, res) => {
 };
 exports.getAllPostToCache = async (req, res) => {
   console.log('query', req.query);
-  const paging = { pageIndex: parseInt(req.query.pageIndex), pageSize: parseInt(req.query.pageSize) };
-  const orderList = { orderBy: req.query.orderBy, orderType: req.query.orderType };
+  const paging = { pageIndex: parseInt(req.query?.pageIndex), pageSize: parseInt(req.query?.pageSize) };
+  const orderList = { orderBy: req.query?.orderBy, orderType: req.query?.orderType };
+  const headArticle = req.query?.headArticle;
+  const found = req.query?.found;
 
-  this.getAllPost({ body: { paging, orderList } }, res);
+  this.getAllPost({ body: { paging, orderList, headArticle, found } }, res);
+};
+
+const getFullDetailPost = (id) => {
+  return new Promise((resolve, reject) => {
+    const request = new sql.Request();
+
+    request.query(FIND_FULL_DETAIL_POST.replace('IdValue', id), (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      const {
+        recordset: [postData],
+      } = data;
+      console.log('postData', postData);
+      resolve(postData);
+    });
+  });
+};
+const updateHeadArticle = async (list = [], id, pageIndex) => {
+  if (!id) return { found: true };
+
+  return new Promise(async (resolve, reject) => {
+    let newList = [];
+    const headArticle = await getFullDetailPost(id);
+
+    const inPage = list.filter((item, index) => item.Id === id).length > 0;
+
+    if (inPage) {
+      if (pageIndex === 1) {
+        const restList = list.filter((item, index) => item.Id !== id);
+        newList = [headArticle, ...restList];
+      } else {
+        newList = list.filter((item, index) => item.Id !== id);
+      }
+      resolve({ newList, found: true });
+    } else {
+      if (pageIndex === 1) {
+        newList = [headArticle, ...list.slice(0, list.length - 1)];
+      } else {
+        newList = list.slice(0, list.length - 1);
+      }
+      resolve({ newList, found: false });
+    }
+  });
 };
 exports.getAllPost = async (req, res) => {
   let repsonse = {};
@@ -86,6 +133,8 @@ exports.getAllPost = async (req, res) => {
   let {
     paging: { pageIndex, pageSize },
     orderList: { orderType, orderBy },
+    headArticle,
+    found,
   } = req.body;
   let start = null;
 
@@ -108,21 +157,31 @@ exports.getAllPost = async (req, res) => {
       } else {
         start = pageSize * (pageIndex - 1);
       }
+
+      if (!found && pageIndex !== 1 && pageIndex !== -1) {
+        start = start - 1;
+      }
+
       request.query(
         FIND_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
           .replace('orderTypeValue', orderType)
           .replace('startValue', start)
           .replace('pageSizeValue', pageSize),
-        (err, data) => {
+        async (err, data) => {
           if (err)
             reject({
               err: ERROR_CODE['500'],
               statusCode: 500,
             });
           const { recordset } = data;
+
+          const { newList, found } = await updateHeadArticle(recordset, headArticle, pageIndex);
+          const newRecordset = newList || recordset;
+
           resolve({
-            data: recordset,
+            data: newRecordset,
             totalRecord: item[''],
+            found: found,
           });
         }
       );
