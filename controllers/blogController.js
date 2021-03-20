@@ -75,10 +75,10 @@ exports.getFeaturedPosts = async (req, res) => {
 };
 exports.getAllPostToCache = async (req, res) => {
   console.log('query', req.query);
-  const paging = { pageIndex: parseInt(req.query?.pageIndex), pageSize: parseInt(req.query?.pageSize) };
-  const orderList = { orderBy: req.query?.orderBy, orderType: req.query?.orderType };
-  const headArticle = req.query?.headArticle;
-  const found = req.query?.found;
+  const paging = { pageIndex: parseInt(req.query.pageIndex), pageSize: parseInt(req.query.pageSize) };
+  const orderList = { orderBy: req.query.orderBy, orderType: req.query.orderType };
+  const headArticle = req.query.headArticle;
+  const found = req.query.found;
 
   this.getAllPost({ body: { paging, orderList, headArticle, found } }, res);
 };
