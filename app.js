@@ -5,7 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 const constants = require('./utils/constants');
 const { DATABASE_SERVER_CONFIG_DEV, DATABASE_SERVER_CONFIG_PRO, DATABASE_SERVER_LOCAL } = constants;
@@ -74,6 +75,41 @@ app.use('/', (req, res, next) => {
 // });
 
 // ROUTES
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "HomNayDocGi API with Swagger",
+      version: "0.1.0",
+      description:
+        "This is documenting api",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+      contact: {
+        name: "Tabn.dev",
+        url: "https://homnaydocgi-client-2-iogc8.ondigitalocean.app/",
+        email: "taibn.dev@gmail.com",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:8080",
+      },
+    ],
+  },
+  apis: ["./routes/books.js"],
+};
+
+const specs = swaggerJsdoc(options);
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs)
+);
+
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/blog', blogRoutes);

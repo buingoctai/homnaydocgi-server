@@ -29,6 +29,8 @@
     "python-shell": "^1.0.8",
     "sanitize-filename": "^1.6.3",
     "superagent": "^5.2.2",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
     "tedious": "^9.2.3",
     "uuid": "^7.0.3",
     "web-push": "^3.4.4",
