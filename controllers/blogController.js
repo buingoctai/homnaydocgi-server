@@ -3,7 +3,7 @@ const sql = require('mssql');
 
 const constants = require('../utils/constants');
 const {
-  FIND_MAIN_ARTICLE,
+  GET_MAIN_ARTICLE,
   FIND_FEATURED_ARTICLE,
   FIND_ARTICLE_AS_PAGE,
   COUNT_TOTAL_ARTICLE,
@@ -19,7 +19,7 @@ const {
 exports.getMainPosts = async (req, res) => {
   const request = new sql.Request();
 
-  request.query(FIND_MAIN_ARTICLE, (err, data) => {
+  request.query(GET_MAIN_ARTICLE, (err, data) => {
     if (err) {
       console.log('err', err);
       res.statusCode = 500;
