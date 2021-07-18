@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const blogController = require('./../controllers/blogController');
-// const blogControllerTS = require('./../controllers-ts/blogController');
+const blogControllerTS = require('./../controllers-ts/blogController');
 
-router.post('/mainPosts', blogController.getMainPosts);
+router.post('/mainPosts', blogControllerTS.getMainPosts);
 router.post('/featuredPosts', blogController.getFeaturedPosts);
 router.post('/allPost', blogController.getAllPost);
 router.get('/allPost', blogController.getAllPostToCache);
