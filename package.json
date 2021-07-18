@@ -34,7 +34,7 @@
     "tedious": "^9.2.3",
     "uuid": "^7.0.3",
     "web-push": "^3.4.4",
-    "ytdl-core": "^4.1.1"
+    "ytdl-core": "^4.8.3"
   },
   "engines": {
     "node": "14.4.0"
