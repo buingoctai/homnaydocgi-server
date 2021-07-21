@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const blogController = require('./../controllers/blogController');
-// const blogControllerTS = require('./../controllers-ts/blogController');
+const blogControllerTS = require('./../controllers-ts/blogController');
 
-router.post('/mainPosts', blogController.getMainPosts);
-router.post('/featuredPosts', blogController.getFeaturedPosts);
-router.post('/allPost', blogController.getAllPost);
+// Convert to TS
+router.post('/mainPosts', blogControllerTS.getMainPosts);
+router.post('/featuredPosts', blogControllerTS.getFeaturedPosts);
+router.post('/allPost', blogControllerTS.getAllPost);
+
 router.get('/allPost', blogController.getAllPostToCache);
 router.post('/getDetailPost', blogController.getDetailPost);
 router.get('/getDetailPost', blogController.getDetailPostToCache);

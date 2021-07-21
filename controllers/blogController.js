@@ -4,11 +4,11 @@ const sql = require('mssql');
 const constants = require('../utils/constants');
 const {
   GET_MAIN_ARTICLE,
-  FIND_FEATURED_ARTICLE,
-  FIND_ARTICLE_AS_PAGE,
+  GET_FEATURED_ARTICLE,
+  GET_ARTICLE_AS_PAGE,
   COUNT_TOTAL_ARTICLE,
   FIND_DETAIL_POST,
-  FIND_FULL_DETAIL_POST,
+  GET_FULL_DETAIL_POST,
   FIND_ALL_TOPIC,
   FIND_ARTICLE_AS_TOPIC,
   SEARCH_ARTICLES,
@@ -43,7 +43,7 @@ exports.getFeaturedPosts = async (req, res) => {
     featuredLabels.forEach((item) => {
       const request = new sql.Request();
 
-      request.query(FIND_FEATURED_ARTICLE.replace('LabelValue', item), (err, data) => {
+      request.query(GET_FEATURED_ARTICLE.replace('LabelValue', item), (err, data) => {
         if (err)
           reject({
             err: ERROR_CODE['500'],
@@ -87,7 +87,7 @@ const getFullDetailPost = (id) => {
   return new Promise((resolve, reject) => {
     const request = new sql.Request();
 
-    request.query(FIND_FULL_DETAIL_POST.replace('IdValue', id), (err, data) => {
+    request.query(GET_FULL_DETAIL_POST.replace('IdValue', id), (err, data) => {
       if (err) {
         reject(err);
       }
@@ -163,7 +163,7 @@ exports.getAllPost = async (req, res) => {
       }
 
       request.query(
-        FIND_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
+        GET_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
           .replace('orderTypeValue', orderType)
           .replace('startValue', start)
           .replace('pageSizeValue', pageSize),
