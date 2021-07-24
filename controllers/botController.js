@@ -1,7 +1,7 @@
 var request = require('request');
 
 const constants = require('../utils/constants');
-const { FACEBOOK_DEV } = constants;
+import {FACEBOOK_DEV} from '../utils/config';
 
 exports.handleVerify = async (request, response) => {
   if (request.query['hub.verify_token'] === FACEBOOK_DEV.VALIDATION_TOKEN) {

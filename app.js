@@ -8,8 +8,8 @@ const rateLimit = require('express-rate-limit');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const app = express();
-const constants = require('./utils/constants');
-const { DATABASE_SERVER_CONFIG_DEV, DATABASE_SERVER_CONFIG_PRO, DATABASE_SERVER_LOCAL } = constants;
+import {DATABASE_SERVER_CONFIG_DEV} from './utils/config';
+
 app.options('*', cors());
 app.use(cors());
 
