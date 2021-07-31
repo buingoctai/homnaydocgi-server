@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const app = express();
-import {DATABASE_SERVER_CONFIG_DEV} from './utils/config';
+import { DATABASE_SERVER_CONFIG_DEV } from './utils/config';
 
 app.options('*', cors());
 app.use(cors());
@@ -28,9 +28,9 @@ const AppError = require('./utils/appError');
 app.use(helmet()); // Set security HTTP headers
 app.use(express.json());
 const limiter = rateLimit({
-  max: 150,
-  windowMs: 60 * 60 * 1000,
-  message: 'Qúa nhiều yêu cầu cho chức năng này. Vui lòng thử lại khi khác!',
+	max: 150,
+	windowMs: 60 * 60 * 1000,
+	message: 'Qúa nhiều yêu cầu cho chức năng này. Vui lòng thử lại khi khác!',
 });
 app.use('/api', limiter); // Limit request from the same API
 
@@ -52,16 +52,16 @@ global.appRoot = path.resolve(__dirname);
 //     });
 // });
 app.use('/', (req, res, next) => {
-  sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
-    if (err) {
-      console.log('err', err);
-      res.statusCode = 500;
-      res.json(err);
-    } else {
-      console.log('Connect DB Succesfully');
-      next();
-    }
-  });
+	sql.connect(DATABASE_SERVER_CONFIG_DEV, (err) => {
+		if (err) {
+			console.log('err', err);
+			res.statusCode = 500;
+			res.json(err);
+		} else {
+			console.log('Connect DB Succesfully');
+			next();
+		}
+	});
 });
 // app.use('/', (req, res, next) => {
 //   var connection = new Connection(DATABASE_SERVER_LOCAL);
@@ -89,9 +89,9 @@ app.use('/notification', notifiRoutes);
 app.use('/google-drive', ggDriveRoutes);
 app.use('/audio', audioRoutes);
 app.use('*', (req, res, next) => {
-  console.log('URL SAI');
-  const err = new AppError(404, 'fail', 'undefined route');
-  res.send(err);
+	console.log('URL SAI');
+	const err = new AppError(404, 'fail', 'undefined route');
+	res.send(err);
 });
 
 module.exports = app;
