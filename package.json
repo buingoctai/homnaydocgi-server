@@ -8,7 +8,7 @@
 		"dev": "nodemon index.js",
 		"start": "tsc && pm2 start ./build/index.js",
 		"stop": "pm2 stop index",
-    "log": "pm2 logs",
+		"log": "pm2 logs",
 		"format": "prettier --write ."
 	},
 	"author": "",

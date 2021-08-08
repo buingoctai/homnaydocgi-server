@@ -9,7 +9,7 @@ const {
 	GET_FEATURED_ARTICLE,
 	GET_ARTICLE_AS_PAGE,
 	COUNT_TOTAL_ARTICLE,
-	FIND_DETAIL_POST,
+	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
 	FIND_ALL_TOPIC,
 	FIND_ARTICLE_AS_TOPIC,
@@ -219,4 +219,24 @@ export const getAllPostToCache = async (
 	const found = Boolean(query.found);
 
 	getAllPost({ body: { paging, orderList, headArticle, found } }, res);
+};
+
+export const getDetailPost = async (req: { body: { id: string } }, res: { statusCode: number; json: (data: any) => void }) => {
+	const { id } = req.body;
+	const request = new sql.Request();
+
+	request.query(GET_DETAIL_POST.replace('IdValue', id), (err: any, data: { recordset: Array<object> }) => {
+		if (err) {
+			res.statusCode = 500;
+			res.json(500);
+		}
+		const {
+			recordset: [postData],
+		} = data;
+		res.json(postData);
+	});
+};
+
+export const getDetailPostToCache = async (req: { query: { id: string } }, res: any) => {
+	getDetailPost({ body: { id: req.query.id } }, res);
 };

@@ -15,7 +15,7 @@ const COUNT_USERNAME_OR_FBURL = "SELECT COUNT(*) AS TOTAL FROM Users WHERE Users
 const DELETE_ARTICLES = 'DELETE FROM Articles WHERE Id IN (LIST_ID)';
 const UPDATE_ARTICLES =
 	"UPDATE Articles SET Author=N'AuthorValue',Title=N'TitleValue',Content=N'ContentValue',Topic='TopicValue',SubmitDate='SubmitDateValue',ImageUrl='ImageUrlValue',Brief=N'BriefValue'  WHERE Id=IdValue";
-const FIND_DETAIL_POST = "SELECT Content FROM Articles WHERE Id='IdValue'";
+const GET_DETAIL_POST = "SELECT Content FROM Articles WHERE Id='IdValue'";
 const GET_FULL_DETAIL_POST = "SELECT * FROM Articles WHERE Id='IdValue'";
 
 const FIND_ALL_TOPIC = 'SELECT Topic FROM Articles';
@@ -69,7 +69,7 @@ module.exports = {
 	GET_ARTICLE_AS_PAGE,
 	DELETE_ARTICLES,
 	UPDATE_ARTICLES,
-	FIND_DETAIL_POST,
+	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
 	FIND_ALL_TOPIC,
 	FIND_ARTICLE_AS_TOPIC,
