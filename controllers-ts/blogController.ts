@@ -229,6 +229,7 @@ export const getDetailPost = async (req: { body: { id: string } }, res: { status
 		if (err) {
 			res.statusCode = 500;
 			res.json(500);
+			HCommon.logError(`[getDetailPost] -> [query detail articles]: ${err}`);
 		}
 		const {
 			recordset: [postData],
@@ -239,4 +240,23 @@ export const getDetailPost = async (req: { body: { id: string } }, res: { status
 
 export const getDetailPostToCache = async (req: { query: { id: string } }, res: any) => {
 	getDetailPost({ body: { id: req.query.id } }, res);
+};
+
+
+export const searchArticles = async (req: { body: { searchTxt: string } }, res: any) => {
+	const { searchTxt } = req.body;
+	const request = new sql.Request();
+
+	request.query(
+		SEARCH_ARTICLES.replace('titleValue', searchTxt).replace('authorValue', searchTxt).replace('contentValue', searchTxt),
+		(err:any, data: { recordset: Array<object> }) => {
+			if (err) {
+				res.statusCode = 500;
+				res.json(500);
+				HCommon.logError(`[searchArticles] -> [query articles contain ${searchTxt} text]: ${err}`);
+			}
+			const { recordset } = data;
+			res.json({ data: recordset });
+		}
+	);
 };

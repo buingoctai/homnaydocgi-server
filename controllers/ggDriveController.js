@@ -6,16 +6,16 @@ const { google } = require('googleapis');
 const ytdl = require('ytdl-core');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
-const sanitize = require('sanitize-filename');
 const { INSERT_AUDIO } = require('../utils/constants');
 
 let auth;
 const TOKEN_PATH = './config/token.json';
+const CREDENTIALS_PATH = './config/credentials.json';
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 
 const startAuth = () => {
 	return new Promise((resolve, reject) => {
-		fs.readFile('./config/credentials.json', (err, content) => {
+		fs.readFile(CREDENTIALS_PATH, (err, content) => {
 			if (err) return console.log('Error loading client secret file:', err);
 			// Authorize a client with credentials, then call the Google Drive API.
 			getAuth(JSON.parse(content), resolve, reject);
@@ -24,6 +24,7 @@ const startAuth = () => {
 };
 
 function getAuth(credentials, resolve, reject) {
+	console.log('taibnlogs credentials', credentials);
 	const { client_secret, client_id, redirect_uris } = credentials.installed;
 	const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
@@ -61,6 +62,7 @@ function getAccessToken(oAuth2Client) {
 		});
 	});
 }
+
 
 const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
 	var fileMetadata = {
@@ -340,4 +342,3 @@ exports.createFolder = async (req, res) => {
 		res.json(err);
 	}
 };
-const check = 'aaaaa';

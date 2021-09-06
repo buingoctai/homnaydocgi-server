@@ -10,10 +10,10 @@ router.post('/allPost', blogControllerTS.getAllPost);
 router.get('/allPost', blogControllerTS.getAllPostToCache);
 router.post('/getDetailPost', blogControllerTS.getDetailPost);
 router.get('/getDetailPost', blogControllerTS.getDetailPostToCache);
+router.post('/searchArticles', blogControllerTS.searchArticles);
 
 router.post('/getAllTopic', blogController.getAllTopic);
 router.post('/getFollowTopic', blogController.getFollowTopic);
-router.post('/searchArticles', blogController.searchArticles);
 router.post('/getSavedPosts', blogController.getSavedPosts);
 
 module.exports = router;
