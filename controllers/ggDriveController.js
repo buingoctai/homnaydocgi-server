@@ -63,8 +63,7 @@ function getAccessToken(oAuth2Client) {
 	});
 }
 
-
-const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
+export const uploadFile = async ({ filePath, fileName, fileType, folderId }) => {
 	var fileMetadata = {
 		name: fileName,
 		parents: [folderId],

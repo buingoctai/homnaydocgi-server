@@ -22,6 +22,7 @@ const readNewRoutes = require('./routes/readNewRoutes');
 const notifiRoutes = require('./routes/notificationRoutes');
 const ggDriveRoutes = require('./routes/ggDriveRoutes');
 const audioRoutes = require('./routes/audioRoutes');
+const speechRoutes = require('./routes/speechRoutes');
 
 const AppError = require('./utils/appError');
 // Create app and integrate with many middleware
@@ -88,6 +89,8 @@ app.use('/readNew', readNewRoutes);
 app.use('/notification', notifiRoutes);
 app.use('/google-drive', ggDriveRoutes);
 app.use('/audio', audioRoutes);
+app.use('/ai', speechRoutes);
+
 app.use('*', (req, res, next) => {
 	console.log('URL SAI');
 	const err = new AppError(404, 'fail', 'undefined route');
