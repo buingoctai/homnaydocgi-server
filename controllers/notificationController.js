@@ -41,7 +41,7 @@ exports.deleteSubscription = (req, res) => {
 };
 
 const performSendNotification = ({ subscriptionList, title }) => {
-	for (index in subscriptionList) {
+	for (const index in subscriptionList) {
 		webpush
 			.sendNotification(
 				JSON.parse(subscriptionList[index].Subscription),

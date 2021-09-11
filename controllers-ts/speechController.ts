@@ -1,12 +1,17 @@
 const fs = require('fs');
-const https = require('https');
+const { retryFetch } = require('../utils');
+import { HCommon } from '../utils/log-system';
+import { uploadFile } from '../controllers/ggDriveController';
 
-import { file } from 'googleapis/build/src/apis/file';
-import  {uploadFile}  from '../controllers/ggDriveController'; 
-import constants from '../utils/constants';
-const { ERROR_CODE } = constants;
-
+/////////// Constants
 const DOWNLOAD_FOLDER = 'resource';
+
+const FPT_TEXT_2_SPEECH_HOST = 'https://api.fpt.ai/hmi/tts/v5';
+
+const VALID_KEY_LIST = ['pFPrXZjFmdpeRQvxyrWCAlG2raO0mx4K', 'qb8Eh2CAuM0qnTGTgxYKkKYlbBSyZtFC', 'fKvki6PvfGv6njJTJ2Ije5qMOdP3vm8g'];
+
+const FOLDER_TEXT_SPEECH = '1KBMCQuzPPo_00SlTCJbAFwcrtsa5XXGP';
+//////////////////
 interface DownloadedFile {
 	fileName: string;
 	filePath: string | undefined;
@@ -20,13 +25,13 @@ interface DownloadFile {
 const downloadFile = (params: DownloadFile): Promise<DownloadedFile> => {
 	const { fileName, url, extenstion } = params;
 
-	return new Promise((resolve, reject) => {
-		https.get(url, (res: any) => {
-			// Image will be stored at this path
+	return new Promise(async (resolve, reject) => {
+		try {
+			const res = await retryFetch({ url: url, retries: 10, retryDelay: 5000 });
 			const path = `./${DOWNLOAD_FOLDER}/${fileName}.${extenstion}`;
 			const fileStream = fs.createWriteStream(path);
-			res.pipe(fileStream);
 
+			res.pipe(fileStream);
 			fileStream.on('finish', () => {
 				fileStream.close();
 				resolve({ fileName, filePath: path });
@@ -34,24 +39,22 @@ const downloadFile = (params: DownloadFile): Promise<DownloadedFile> => {
 			fileStream.on('error', () => {
 				reject({ fileName, filePath: undefined });
 			});
-		});
+		} catch (error) {
+			reject({ fileName, filePath: undefined });
+		}
 	});
 };
-
-const FPT_TEXT_2_SPEECH_HOST = 'https://api.fpt.ai/hmi/tts/v5';
-
-const VALID_KEY_LIST = ['pFPrXZjFmdpeRQvxyrWCAlG2raO0mx4K', 'qb8Eh2CAuM0qnTGTgxYKkKYlbBSyZtFC', 'fKvki6PvfGv6njJTJ2Ije5qMOdP3vm8g'];
-// const VALID_KEY_LIST = ['fKvki6PvfGv6njJTJ2Ije5qMOdP3vm8g'];
-
 interface FptText2SpeechResponse {
 	async: string;
 	error: number;
 	message: string;
 	request_id: string;
 }
+
 const getRandomValidKeys = () => {
 	return VALID_KEY_LIST[Math.floor(Math.random() * VALID_KEY_LIST.length)];
 };
+
 export const getAudioUrl = (text: string, reader: string): Promise<Array<string>> => {
 	const request = require('superagent');
 	const paragraphList: Array<string> = [];
@@ -62,7 +65,7 @@ export const getAudioUrl = (text: string, reader: string): Promise<Array<string>
 
 	if (sentenceList.length > 2) {
 		for (let i = 1; i < sentenceList.length; i++) {
-			if ((paragraph + sentenceList[i]).length > 5000) {
+			if ((paragraph + sentenceList[i]).length > 1000) {
 				paragraphList.push(paragraph);
 				paragraph = '';
 				i -= 1;
@@ -80,8 +83,6 @@ export const getAudioUrl = (text: string, reader: string): Promise<Array<string>
 	} else {
 		paragraphList.push(text);
 	}
-
-	console.log('paragraphList', paragraphList);
 
 	return new Promise((resolve, reject) => {
 		for (let i = 0; i < paragraphList.length; i++) {
@@ -123,6 +124,22 @@ interface MergeFiles {
 	fileName: string;
 	filePath: string | undefined;
 }
+
+const removeFiles = async (files: Array<MergeFiles>): Promise<any> => {
+	return new Promise((resolve, reject) => {
+		for (let i = 0; i < files.length; i++) {
+			const filePath = files[i].filePath;
+
+			fs.unlink(filePath, (err: any) => {
+				if (err) {
+					HCommon.logError(`[removeFiles] remove files has errors: ${err}`);
+					reject(files[i]);
+				}
+			});
+		}
+		resolve('Remove files success!');
+	});
+};
 const mergeMultiFile = async (files: Array<MergeFiles>, fileName: string, extenstion: string): Promise<DownloadedFile> => {
 	const path = `./${DOWNLOAD_FOLDER}/${fileName}.${extenstion}`;
 	const outStream = fs.createWriteStream(path);
@@ -130,12 +147,14 @@ const mergeMultiFile = async (files: Array<MergeFiles>, fileName: string, extens
 	return new Promise((resolve, reject) => {
 		for (let i = 0; i < files.length; i++) {
 			const filePath = files[i].filePath;
-
-			if (filePath) fs.createReadStream(files[i].filePath).pipe(outStream);
+			if (filePath) {
+				fs.createReadStream(filePath).pipe(outStream);
+			}
 		}
 
 		outStream.on('finish', () => {
 			outStream.close();
+			removeFiles(files);
 			resolve({ fileName, filePath: path });
 		});
 		outStream.on('error', () => {
@@ -149,7 +168,11 @@ interface Text2Speech {
 	text?: string;
 	reader?: string;
 }
-
+interface Response {
+	id: string;
+	name: string;
+	url: string;
+}
 export const convertText2Speech = async (req: { body: object }, res: { statusCode: number; json: (data: any) => void }) => {
 	const textInfo: Text2Speech = req.body || {};
 
@@ -158,21 +181,20 @@ export const convertText2Speech = async (req: { body: object }, res: { statusCod
 		res.json('Invalid params');
 		return;
 	}
-
-
 	try {
 		const audiolList: Array<string> = await getAudioUrl(textInfo.text, textInfo.reader ? textInfo.reader : 'banmai');
 		const audioDownloaded: Array<DownloadedFile> = await downloadMulti({ fileName: textInfo.fileName, urlList: audiolList, extenstion: 'mp3' });
 		const audio = await mergeMultiFile(audioDownloaded, textInfo.fileName, 'mp3');
-        const uploaded = await uploadFile({
-            filePath: audio.filePath,
-            fileName: audio.fileName,
-            fileType: 'audio/mp3',
-            folderId: '1KBMCQuzPPo_00SlTCJbAFwcrtsa5XXGP',
-        });
-		res.json(audiolList);
+		const uploaded = await uploadFile({
+			filePath: audio.filePath,
+			fileName: audio.fileName,
+			fileType: 'audio/mp3',
+			folderId: FOLDER_TEXT_SPEECH,
+		});
+		const response: Response = { id: uploaded.id, name: uploaded.name, url: `https://docs.google.com/uc?export=download&id=${uploaded.id}` };
+		res.json(response);
 	} catch (error) {
 		res.statusCode = 500;
-		res.json('Text2Speech has erros');
+		res.json(`Text2Speech has errors: ${error}`);
 	}
 };

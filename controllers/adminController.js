@@ -48,7 +48,7 @@ exports.deletePosts = async (req, res) => {
 	const request = new sql.Request();
 	let stringList = `'${items[0]}'`;
 
-	for (i = 1; i < items.length; i++) {
+	for (let i = 1; i < items.length; i++) {
 		stringList = stringList.concat(',', `'${items[i]}'`);
 	}
 	request.query(DELETE_ARTICLES.replace('LIST_ID', stringList), (err) => {
