@@ -202,7 +202,7 @@ exports.getAudioBook = async (req, res) => {
 				url: `https://docs.google.com/uc?export=download&id=${item.id}`,
 			};
 		});
-		res.json({ data: newFolders, id });
+		res.json({ data: newFolders,id });
 	} catch (err) {
 		res.statusCode = 500;
 		res.json(err);

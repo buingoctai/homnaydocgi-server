@@ -13,7 +13,7 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
  * https://developers.google.com/drive/api/v3/quickstart/nodejs
  * https://console.cloud.google.com/home/dashboard?project=quickstart-1606563679883&authuser=1
  */
-const startAuth = () => {
+export const startAuth = () => {
 	return new Promise((resolve, reject) => {
 		fs.readFile(CREDENTIALS_PATH, (err: any, content: any) => {
 			if (err) return HCommon.logError(`[Authen GoogleDrive] -> Get error in reading existing credentials ${err}`);
@@ -40,10 +40,12 @@ function getAuth(credentials: any, resolve: any, reject: any) {
 		HCommon.logError(`[Authen GoogleDrive] -> [getAuth], token: ${token}`);
 		oAuth2Client.setCredentials(JSON.parse(token));
 		auth = oAuth2Client;
-		resolve();
+		resolve(auth);
 	});
 }
-
+/** Gen token
+ * @param  {any} oAuth2Client
+ */
 function getAccessToken(oAuth2Client: any) {
 	const authUrl = oAuth2Client.generateAuthUrl({
 		access_type: 'offline',

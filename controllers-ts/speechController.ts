@@ -16,13 +16,16 @@ interface DownloadedFile {
 	fileName: string;
 	filePath: string | undefined;
 }
-interface DownloadFile {
+interface DownloadingFile {
 	fileName: string;
 	url: string;
 	extenstion: string;
 }
-
-const downloadFile = (params: DownloadFile): Promise<DownloadedFile> => {
+/** Download file from remote url. Return file path in local
+ * @param  {DownloadingFile} params
+ * @returns Promise
+ */
+const downloadFile = (params: DownloadingFile): Promise<DownloadedFile> => {
 	const { fileName, url, extenstion } = params;
 
 	return new Promise(async (resolve, reject) => {
@@ -44,17 +47,21 @@ const downloadFile = (params: DownloadFile): Promise<DownloadedFile> => {
 		}
 	});
 };
+
 interface FptText2SpeechResponse {
 	async: string;
 	error: number;
 	message: string;
 	request_id: string;
 }
-
 const getRandomValidKeys = () => {
 	return VALID_KEY_LIST[Math.floor(Math.random() * VALID_KEY_LIST.length)];
 };
-
+/** Get url audio from FPT Platform
+ * @param  {string} text
+ * @param  {string} reader
+ * @returns Promise
+ */
 export const getAudioUrl = (text: string, reader: string): Promise<Array<string>> => {
 	const request = require('superagent');
 	const paragraphList: Array<string> = [];
@@ -111,6 +118,10 @@ interface DownloadMulti {
 	urlList: Array<string>;
 	extenstion: string;
 }
+/** Download files from url array
+ * @param  {DownloadMulti} params
+ * @returns Promise
+ */
 const downloadMulti = async (params: DownloadMulti): Promise<Array<DownloadedFile>> => {
 	const { fileName, urlList, extenstion } = params;
 	const list = urlList.map((url, idx) => {
@@ -124,7 +135,10 @@ interface MergeFiles {
 	fileName: string;
 	filePath: string | undefined;
 }
-
+/** Delete total downloaded files after using
+ * @param  {Array<MergeFiles>} files
+ * @returns Promise
+ */
 const removeFiles = async (files: Array<MergeFiles>): Promise<any> => {
 	return new Promise((resolve, reject) => {
 		for (let i = 0; i < files.length; i++) {
@@ -140,6 +154,13 @@ const removeFiles = async (files: Array<MergeFiles>): Promise<any> => {
 		resolve('Remove files success!');
 	});
 };
+
+/** Merge multi file in single file
+ * @param  {Array<MergeFiles>} files
+ * @param  {string} fileName
+ * @param  {string} extenstion
+ * @returns Promise
+ */
 const mergeMultiFile = async (files: Array<MergeFiles>, fileName: string, extenstion: string): Promise<DownloadedFile> => {
 	const path = `./${DOWNLOAD_FOLDER}/${fileName}.${extenstion}`;
 	const outStream = fs.createWriteStream(path);
@@ -168,11 +189,15 @@ interface Text2Speech {
 	text?: string;
 	reader?: string;
 }
-interface Response {
+interface SpeechResponse {
 	id: string;
 	name: string;
 	url: string;
 }
+/** Convert text to speech urls
+ * @param  {{body:object}} req
+ * @param  {{statusCode:number;json:(data:any} res
+ */
 export const convertText2Speech = async (req: { body: object }, res: { statusCode: number; json: (data: any) => void }) => {
 	const textInfo: Text2Speech = req.body || {};
 
@@ -191,7 +216,7 @@ export const convertText2Speech = async (req: { body: object }, res: { statusCod
 			fileType: 'audio/mp3',
 			folderId: FOLDER_TEXT_SPEECH,
 		});
-		const response: Response = { id: uploaded.id, name: uploaded.name, url: `https://docs.google.com/uc?export=download&id=${uploaded.id}` };
+		const response: SpeechResponse = { id: uploaded.id, name: uploaded.name, url: `https://docs.google.com/uc?export=download&id=${uploaded.id}` };
 		res.json(response);
 	} catch (error) {
 		res.statusCode = 500;
