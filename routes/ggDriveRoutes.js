@@ -5,9 +5,9 @@ const ggDriveController = require('./../controllers/ggDriveController');
 const ggDriveControllerTS = require('./../controllers-ts/ggDriveController');
 
 // router.post('/getAllAudioBook', ggDriveController.getAllAudioBook);
-router.post('/getAllAudioBook', ggDriveControllerTS.getAllAudioBook);
+router.post('/getAllCollection', ggDriveControllerTS.getAllCollection);
 // router.post('/getAudioBook', ggDriveController.getAudioBook);
-router.post('/getAudioBook', ggDriveControllerTS.getAudioBook);
+router.post('/getAllAudio', ggDriveControllerTS.getAllAudio);
 
 
 router.post('/createMp3', ggDriveController.youtube2mp3);
