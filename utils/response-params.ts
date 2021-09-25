@@ -17,14 +17,13 @@ class RepsonseAllPost {
 	}
 }
 
-
-interface Request{
-	body: object,
+interface Request {
+	body: object;
 }
 
 interface Response {
-	statusCode: number,
-	json: (data: any) => void,
+	statusCode: number;
+	json: (data: any) => void;
 }
 
 export { RepsonseFeaturedPost, RepsonseAllPost, Request, Response };

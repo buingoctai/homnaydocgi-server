@@ -37,7 +37,6 @@ function getAuth(credentials: any, resolve: any, reject: any) {
 			HCommon.logError(`[Authen GoogleDrive] -> Starting generate token`);
 			return getAccessToken(oAuth2Client);
 		}
-		HCommon.logError(`[Authen GoogleDrive] -> [getAuth], token: ${token}`);
 		oAuth2Client.setCredentials(JSON.parse(token));
 		auth = oAuth2Client;
 		resolve(auth);

@@ -2,6 +2,7 @@ const fs = require('fs');
 const { retryFetch } = require('../utils');
 import { HCommon } from '../utils/log-system';
 import { uploadFile } from '../controllers/ggDriveController';
+import { Response } from '../utils/response-params';
 
 /////////// Constants
 const DOWNLOAD_FOLDER = 'resource';
@@ -198,7 +199,7 @@ interface SpeechResponse {
  * @param  {{body:object}} req
  * @param  {{statusCode:number;json:(data:any} res
  */
-export const convertText2Speech = async (req: { body: object }, res: { statusCode: number; json: (data: any) => void }) => {
+export const convertText2Speech = async (req: { body: object }, res: Response) => {
 	const textInfo: Text2Speech = req.body || {};
 
 	if (!textInfo.text || !textInfo.fileName) {

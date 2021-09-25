@@ -1,8 +1,8 @@
-var { query: any } = require('express');
-var sql: any = require('mssql');
+const sql: any = require('mssql');
 
 import constants from '../utils/constants';
 import { HCommon } from '../utils/log-system';
+import { Response } from '../utils/response-params';
 import { RepsonseFeaturedPost, RepsonseAllPost } from '../utils/response-params';
 const {
 	GET_MAIN_ARTICLE,
@@ -11,14 +11,11 @@ const {
 	COUNT_TOTAL_ARTICLE,
 	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
-	FIND_ALL_TOPIC,
-	FIND_ARTICLE_AS_TOPIC,
 	SEARCH_ARTICLES,
-	FIND_ARTICLES_BELONG_IN_LIST_ID,
 	ERROR_CODE,
 } = constants;
 
-export const getMainPosts = async (req: object, res: { statusCode: number; json: Function }) => {
+export const getMainPosts = async (req: object, res: Response) => {
 	const request = new sql.Request();
 
 	request.query(GET_MAIN_ARTICLE, (err: object, data: { recordset: Array<object> }) => {
@@ -36,7 +33,7 @@ export const getMainPosts = async (req: object, res: { statusCode: number; json:
 	});
 };
 
-export const getFeaturedPosts = async (req: { body: { featuredLabels: Array<string> } }, res: { statusCode: number; json: (data: any) => void }) => {
+export const getFeaturedPosts = async (req: { body: { featuredLabels: Array<string> } }, res: Response) => {
 	const repsonse = new RepsonseFeaturedPost([]);
 
 	let index = 0;
@@ -133,7 +130,7 @@ export const getAllPost = async (
 			found: boolean;
 		};
 	},
-	res: { statusCode: number; json: (data: any) => void }
+	res: Response
 ) => {
 	const response = new RepsonseAllPost([], 0, false);
 
@@ -210,7 +207,7 @@ export const getAllPost = async (
 
 export const getAllPostToCache = async (
 	req: { query: { pageIndex: string; pageSize: string; orderBy: string; orderType: string; headArticle: string; found: boolean } },
-	res: { statusCode: number; json: (data: any) => void }
+	res: Response
 ) => {
 	const { query } = req;
 	const paging = { pageIndex: parseInt(query.pageIndex), pageSize: parseInt(query.pageSize) };
@@ -221,7 +218,7 @@ export const getAllPostToCache = async (
 	getAllPost({ body: { paging, orderList, headArticle, found } }, res);
 };
 
-export const getDetailPost = async (req: { body: { id: string } }, res: { statusCode: number; json: (data: any) => void }) => {
+export const getDetailPost = async (req: { body: { id: string } }, res: Response) => {
 	const { id } = req.body;
 	const request = new sql.Request();
 
