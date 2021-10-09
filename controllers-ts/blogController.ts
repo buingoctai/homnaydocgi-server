@@ -8,11 +8,19 @@ const {
 	GET_MAIN_ARTICLE,
 	GET_FEATURED_ARTICLE,
 	GET_ARTICLE_AS_PAGE,
+	GET_ARTICLE_AS_PAGE_AUTHOR,
+	GET_ARTICLE_AS_PAGE_TOPIC,
+	GET_ARTICLE_AS_PAGE_AUTHOR_TOPIC,
 	COUNT_TOTAL_ARTICLE,
+	COUNT_TOTAL_ARTICLE_TOPIC,
+	COUNT_TOTAL_ARTICLE_AUTHOR,
+	COUNT_TOTAL_ARTICLE_AUTHOR_TOPIC,
 	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
 	SEARCH_ARTICLES,
+	GET_ALL_TOPIC,
 	ERROR_CODE,
+	GET_ALL_AUTHOR,
 } = constants;
 
 export const getMainPosts = async (req: object, res: Response) => {
@@ -128,6 +136,7 @@ export const getAllPost = async (
 			orderList: { orderType: string; orderBy: string };
 			headArticle: string;
 			found: boolean;
+			filter: { topic: Array<string>; author: Array<string> } | null;
 		};
 	},
 	res: Response
@@ -139,6 +148,7 @@ export const getAllPost = async (
 		orderList: { orderType, orderBy },
 		headArticle,
 		found,
+		filter = { topic: [], author: [] },
 	} = req.body;
 	let start: any = null;
 	let pageSize: number = req.body.paging.pageSize;
@@ -146,7 +156,46 @@ export const getAllPost = async (
 	const executeQuery = new Promise((resolve, reject) => {
 		const request = new sql.Request();
 
-		request.query(COUNT_TOTAL_ARTICLE, (err: object, data: { recordset: Array<object> }) => {
+		let topicStr = '';
+		let authorStr = '';
+		let queryAsPage = '';
+		let queryTotal = '';
+
+		if (filter?.topic && filter?.topic.length > 0) {
+			if (filter?.topic.length === 1) {
+				topicStr = `'${filter?.topic[0]}'`;
+			} else {
+				topicStr = `'${filter?.topic[0]}'`;
+				for (let i = 1; i < filter?.topic.length; i++) {
+					topicStr += ',' + `'${filter?.topic[i]}'`;
+				}
+			}
+		}
+
+		if (filter?.author && filter?.author.length > 0) {
+			if (filter?.author.length === 1) {
+				authorStr = `'${filter?.author[0]}'`;
+			} else {
+				authorStr = `'${filter?.author[0]}'`;
+				for (let i = 1; i < filter?.author.length; i++) {
+					authorStr += ',' + `'${filter?.author[i]}'`;
+				}
+			}
+		}
+
+		/*  Query as page */
+		if (topicStr && authorStr) {
+			queryTotal = COUNT_TOTAL_ARTICLE_AUTHOR_TOPIC.replace('authorValues', authorStr).replace('topicValues', topicStr);
+		} else if (topicStr) {
+			queryTotal = COUNT_TOTAL_ARTICLE_TOPIC.replace('topicValues', topicStr);
+		} else if (authorStr) {
+			queryTotal = COUNT_TOTAL_ARTICLE_AUTHOR.replace('authorValues', authorStr);
+		} else {
+			queryTotal = COUNT_TOTAL_ARTICLE;
+		}
+
+		/*---------------------------------*/
+		request.query(queryTotal, (err: object, data: { recordset: Array<object> }) => {
 			if (err) {
 				HCommon.logError(`[getAllPost] -> [query count total article]: ${err}`);
 				reject({
@@ -170,30 +219,52 @@ export const getAllPost = async (
 				start = start - 1;
 			}
 
-			request.query(
-				GET_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
+			/*  Query as page */
+			if (topicStr && authorStr) {
+				queryAsPage = GET_ARTICLE_AS_PAGE_AUTHOR_TOPIC.replace('orderByValue', orderBy)
 					.replace('orderTypeValue', orderType)
 					.replace('startValue', start)
-					.replace('pageSizeValue', pageSize.toString()),
-				async (err: object, data: { recordset: Array<{ Id: string }> }) => {
-					if (err) {
-						HCommon.logError(`[getAllPost] -> [query articles as page]: ${err}`);
-						reject({
-							err: ERROR_CODE['500'],
-							statusCode: 500,
-						});
-					}
+					.replace('pageSizeValue', pageSize.toString())
+					.replace('topicValues', topicStr)
+					.replace('authorValues', authorStr);
+			} else if (topicStr) {
+				queryAsPage = GET_ARTICLE_AS_PAGE_TOPIC.replace('orderByValue', orderBy)
+					.replace('orderTypeValue', orderType)
+					.replace('startValue', start)
+					.replace('pageSizeValue', pageSize.toString())
+					.replace('topicValues', topicStr);
+			} else if (authorStr) {
+				queryAsPage = GET_ARTICLE_AS_PAGE_AUTHOR.replace('orderByValue', orderBy)
+					.replace('orderTypeValue', orderType)
+					.replace('startValue', start)
+					.replace('pageSizeValue', pageSize.toString())
+					.replace('authorValues', authorStr);
+			} else {
+				queryAsPage = GET_ARTICLE_AS_PAGE.replace('orderByValue', orderBy)
+					.replace('orderTypeValue', orderType)
+					.replace('startValue', start)
+					.replace('pageSizeValue', pageSize.toString());
+			}
+			/*---------------------------------*/
+			console.log(queryAsPage);
 
-					const { recordset } = data;
-					const { newList, found } = await updateHeadArticle(recordset, headArticle, pageIndex);
-					const newRecordset = newList || recordset;
-
-					response.data = newRecordset;
-					response.totalRecord = total;
-					response.found = found;
-					resolve(response);
+			request.query(queryAsPage, async (err: object, data: { recordset: Array<{ Id: string }> }) => {
+				if (err) {
+					HCommon.logError(`[getAllPost] -> [query articles as page]: ${err}`);
+					reject({
+						err: ERROR_CODE['500'],
+						statusCode: 500,
+					});
 				}
-			);
+				const { recordset } = data;
+				const { newList, found } = await updateHeadArticle(recordset, headArticle, pageIndex);
+				const newRecordset: [] = newList || recordset;
+
+				response.data = newRecordset;
+				response.totalRecord = total;
+				response.found = found;
+				resolve(response);
+			});
 		});
 	});
 
@@ -215,7 +286,7 @@ export const getAllPostToCache = async (
 	const headArticle = query.headArticle;
 	const found = Boolean(query.found);
 
-	getAllPost({ body: { paging, orderList, headArticle, found } }, res);
+	getAllPost({ body: { paging, orderList, headArticle, found, filter: null } }, res);
 };
 
 export const getDetailPost = async (req: { body: { id: string } }, res: Response) => {
@@ -255,4 +326,46 @@ export const searchArticles = async (req: { body: { searchTxt: string } }, res: 
 			res.json({ data: recordset });
 		}
 	);
+};
+
+export const getAllTopic = async (req: any, res: Response) => {
+	let response: Array<string> = [];
+	const request = new sql.Request();
+
+	request.query(GET_ALL_TOPIC, (err: any, data: { recordset: Array<any> }) => {
+		if (err) {
+			HCommon.logError(`[getAllTopic] -> [query all topic.`);
+			res.statusCode = 500;
+			res.json(500);
+		}
+		const { recordset } = data;
+		recordset.map((item: { Topic: string }) => {
+			if (item && item.Topic) {
+				response.push(item.Topic);
+			}
+		});
+
+		res.json(response.filter((a, b) => response.indexOf(a) === b));
+	});
+};
+
+export const getAllAuthor = async (req: any, res: Response) => {
+	let response: Array<string> = [];
+	const request = new sql.Request();
+
+	request.query(GET_ALL_AUTHOR, (err: any, data: { recordset: Array<any> }) => {
+		if (err) {
+			HCommon.logError(`[getAllAuthor] -> [query all authors.`);
+			res.statusCode = 500;
+			res.json(500);
+		}
+		const { recordset } = data;
+		recordset.map((item: { Author: string }) => {
+			if (item && item.Author) {
+				response.push(item.Author);
+			}
+		});
+
+		res.json(response.filter((a, b) => response.indexOf(a) === b));
+	});
 };

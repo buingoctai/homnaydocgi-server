@@ -9,7 +9,7 @@ const {
 	COUNT_TOTAL_ARTICLE,
 	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
-	FIND_ALL_TOPIC,
+	GET_ALL_TOPIC,
 	FIND_ARTICLE_AS_TOPIC,
 	SEARCH_ARTICLES,
 	FIND_ARTICLES_BELONG_IN_LIST_ID,
@@ -220,7 +220,7 @@ exports.getAllTopic = async (req, res) => {
 	let response = [];
 	const request = new sql.Request();
 
-	request.query(FIND_ALL_TOPIC, (err, data) => {
+	request.query(GET_ALL_TOPIC, (err, data) => {
 		if (err) {
 			res.statusCode = 500;
 			res.json(500);

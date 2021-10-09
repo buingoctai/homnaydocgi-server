@@ -11,8 +11,9 @@ router.get('/allPost', blogControllerTS.getAllPostToCache);
 router.post('/getDetailPost', blogControllerTS.getDetailPost);
 router.get('/getDetailPost', blogControllerTS.getDetailPostToCache);
 router.post('/searchArticles', blogControllerTS.searchArticles);
+router.get('/getAllTopic', blogControllerTS.getAllTopic);
+router.get('/getAllAuthor', blogControllerTS.getAllAuthor);
 
-router.post('/getAllTopic', blogController.getAllTopic);
 router.post('/getFollowTopic', blogController.getFollowTopic);
 router.post('/getSavedPosts', blogController.getSavedPosts);
 

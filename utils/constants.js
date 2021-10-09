@@ -9,7 +9,17 @@ const GET_FEATURED_ARTICLE =
 	"SELECT TOP 1 Id,Author,Title,Brief,Topic,ImageUrl,SubmitDate FROM Articles WHERE Articles.Topic='LabelValue' ORDER BY SubmitDate DESC";
 const GET_ARTICLE_AS_PAGE =
 	'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
+const GET_ARTICLE_AS_PAGE_AUTHOR =
+	'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Author In (authorValues) ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
+const GET_ARTICLE_AS_PAGE_TOPIC =
+	'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Topic IN (topicValues) ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
+const GET_ARTICLE_AS_PAGE_AUTHOR_TOPIC =
+	'SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Author In (authorValues) and Topic IN (topicValues) ORDER BY orderByValue orderTypeValue OFFSET startValue ROWS FETCH NEXT pageSizeValue ROWS ONLY';
 const COUNT_TOTAL_ARTICLE = 'SELECT COUNT(*) FROM Articles';
+const COUNT_TOTAL_ARTICLE_AUTHOR = 'SELECT COUNT(*) FROM Articles WHERE Author In (authorValues)';
+const COUNT_TOTAL_ARTICLE_TOPIC = 'SELECT COUNT(*) FROM Articles WHERE Topic IN (topicValues)';
+const COUNT_TOTAL_ARTICLE_AUTHOR_TOPIC = 'SELECT COUNT(*) FROM Articles WHERE Author In (authorValues) and Topic IN (topicValues)';
+
 const INSERT_PERSONALIZED_INFORMS = "INSERT INTO PersonalizedInforms (UserId,TechList,AddList) VALUES ('UserIdValue','TechListValue','AddListValue')";
 const COUNT_USERNAME_OR_FBURL = "SELECT COUNT(*) AS TOTAL FROM Users WHERE Users.UserName='UserNameValue' OR Users.FbUrl='FbUrlValue'";
 const DELETE_ARTICLES = 'DELETE FROM Articles WHERE Id IN (LIST_ID)';
@@ -18,7 +28,9 @@ const UPDATE_ARTICLES =
 const GET_DETAIL_POST = "SELECT Content FROM Articles WHERE Id='IdValue'";
 const GET_FULL_DETAIL_POST = "SELECT * FROM Articles WHERE Id='IdValue'";
 
-const FIND_ALL_TOPIC = 'SELECT Topic FROM Articles';
+const GET_ALL_TOPIC = 'SELECT Topic FROM Articles';
+const GET_ALL_AUTHOR = 'SELECT Author FROM Articles';
+
 const FIND_ARTICLE_AS_TOPIC = "SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Articles.Topic='LabelValue'";
 const SEARCH_ARTICLES =
 	"SELECT Id,Author,Title,Brief,Topic,ImageUrl, SubmitDate FROM Articles WHERE Title LIKE '%titleValue%' OR Author LIKE '%authorValue%' OR Content LIKE '%contentValue%'";
@@ -67,12 +79,18 @@ module.exports = {
 	INSERT_PERSONALIZED_INFORMS,
 	COUNT_USERNAME_OR_FBURL,
 	COUNT_TOTAL_ARTICLE,
+	COUNT_TOTAL_ARTICLE_TOPIC,
+	COUNT_TOTAL_ARTICLE_AUTHOR,
+	COUNT_TOTAL_ARTICLE_AUTHOR_TOPIC,
 	GET_ARTICLE_AS_PAGE,
+	GET_ARTICLE_AS_PAGE_AUTHOR,
+	GET_ARTICLE_AS_PAGE_TOPIC,
+	GET_ARTICLE_AS_PAGE_AUTHOR_TOPIC,
 	DELETE_ARTICLES,
 	UPDATE_ARTICLES,
 	GET_DETAIL_POST,
 	GET_FULL_DETAIL_POST,
-	FIND_ALL_TOPIC,
+	GET_ALL_TOPIC,
 	FIND_ARTICLE_AS_TOPIC,
 	SEARCH_ARTICLES,
 	FIND_ARTICLES_BELONG_IN_LIST_ID,
@@ -87,4 +105,5 @@ module.exports = {
 	INSERT_AUDIO,
 	SEARCH_THUMB,
 	GET_THUMB,
+	GET_ALL_AUTHOR,
 };
