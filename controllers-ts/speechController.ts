@@ -208,7 +208,7 @@ export const convertText2Speech = async (req: { body: object }, res: Response) =
 		return;
 	}
 	try {
-		const audiolList: Array<string> = await getAudioUrl(textInfo.text, textInfo.reader ? textInfo.reader : 'banmai');
+		const audiolList: Array<string>=await getAudioUrl(textInfo.text, textInfo.reader ? textInfo.reader : 'banmai');
 		const audioDownloaded: Array<DownloadedFile> = await downloadMulti({ fileName: textInfo.fileName, urlList: audiolList, extenstion: 'mp3' });
 		const audio = await mergeMultiFile(audioDownloaded, textInfo.fileName, 'mp3');
 		const uploaded = await uploadFile({
