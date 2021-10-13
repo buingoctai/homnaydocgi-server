@@ -23,7 +23,7 @@ const audioRoutes = require('./routes/audioRoutes');
 const speechRoutes = require('./routes/speechRoutes');
 const AppError = require('./utils/appError');
 
-const allowlist = ['http://localhost:3007', 'https://homnaydocgi-pwa-2rat3.ondigitalocean.app/','https://homnaydocgi-client-2-iogc8.ondigitalocean.app']
+const allowlist = ['http://localhost:3007', 'https://taibui.info','https://homnaydocgi-client-2-iogc8.ondigitalocean.app'];
 const corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {
