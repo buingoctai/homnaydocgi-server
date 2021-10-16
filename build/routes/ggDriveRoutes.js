@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var express = require('express');
+var router = express.Router();
+var ggDriveController_1 = require("./../controllers-ts/ggDriveController");
+router.post('/getAllCollection', ggDriveController_1.getAllCollection);
+router.post('/getAllAudio', ggDriveController_1.getAllAudio);
+router.post('/createMp3', ggDriveController_1.youtube2mp3);
+router.post('/createFolder', ggDriveController_1.createFolder);
+router.post('/getRecommendAudio', ggDriveController_1.getRecommendAudio);
+module.exports = router;
