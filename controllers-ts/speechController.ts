@@ -11,7 +11,7 @@ const FPT_TEXT_2_SPEECH_HOST = 'https://api.fpt.ai/hmi/tts/v5';
 
 const VALID_KEY_LIST = ['pFPrXZjFmdpeRQvxyrWCAlG2raO0mx4K', 'qb8Eh2CAuM0qnTGTgxYKkKYlbBSyZtFC', 'fKvki6PvfGv6njJTJ2Ije5qMOdP3vm8g'];
 
-const FOLDER_TEXT_SPEECH = '1KBMCQuzPPo_00SlTCJbAFwcrtsa5XXGP';
+const FOLDER_TEXT_SPEECH = '1pm5_Tg7diUJkq4weYKoyMOMEHAmp4UaF';
 //////////////////
 interface DownloadedFile {
 	fileName: string;
@@ -208,7 +208,7 @@ export const convertText2Speech = async (req: { body: object }, res: Response) =
 		return;
 	}
 	try {
-		const audiolList: Array<string>=await getAudioUrl(textInfo.text, textInfo.reader ? textInfo.reader : 'banmai');
+		const audiolList: Array<string> = await getAudioUrl(textInfo.text, textInfo.reader ? textInfo.reader : 'banmai');
 		const audioDownloaded: Array<DownloadedFile> = await downloadMulti({ fileName: textInfo.fileName, urlList: audiolList, extenstion: 'mp3' });
 		const audio = await mergeMultiFile(audioDownloaded, textInfo.fileName, 'mp3');
 		const uploaded = await uploadFile({

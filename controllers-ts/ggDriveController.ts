@@ -2,7 +2,9 @@ import { startAuth } from './authen-ggDrive';
 import { google } from 'googleapis';
 import { Response } from '../utils/response-params';
 import { HCommon } from '../utils/log-system';
-import { INSERT_AUDIO, GET_THUMB } from '../utils/constants';
+import { INSERT_AUDIO, GET_THUMB, COUNT_AUDIO, GET_RELATED_VIDEOS, GET_EXISTED_VIDEOS } from '../utils/constants';
+import { getYoutubeId } from '../utils';
+
 import ERROR_CODE from '../utils/error-code';
 
 const fs = require('fs');
@@ -252,11 +254,32 @@ export const createFolder = async (req: { body: { collectionName: string } }, re
 	}
 };
 
+const checkExistedAudio = (videoId: string) => {
+	const request = new sql.Request();
+
+	return new Promise((resolve, reject) => {
+		request.query(COUNT_AUDIO.replace('videoIdValue', videoId), (err: object, data: { recordset: Array<object> }) => {
+			if (err) {
+				HCommon.logError(`[blogController] -> [checkExistedAudio]: ${err}`);
+				reject(err);
+			}
+
+			const {
+				recordset: [items],
+			} = data;
+
+			const [total] = Object.values(items);
+			resolve(total);
+		});
+	});
+};
+
 interface VideoLocal {
 	filePath: string;
 	folderPath: string;
 	title: string;
 	videoId: string;
+	relatedVideos: string;
 }
 /** Download youtube video into local
  * @param  {string} url
@@ -264,15 +287,26 @@ interface VideoLocal {
  */
 const downloadVideo = async (url: string): Promise<VideoLocal> => {
 	return new Promise(async (resolve, reject) => {
+		const _videoId: string = getYoutubeId(url);
+
 		try {
-			const videoInfo = await ytdl.getInfo(url);
+			const total: any = await checkExistedAudio(_videoId);
+			if (total > 0) {
+				reject({ error_code: '2004', message: ERROR_CODE['2004'] });
+				return;
+			}
+			const embedYtd = `https://youtu.be/${_videoId}`;
+
+			const videoInfo = await ytdl.getInfo(embedYtd);
+			const _relatedVideos = videoInfo.related_videos.map((v: any) => v.id).join(',');
+
 			const title = videoInfo?.player_response?.videoDetails?.title;
 			const videoId = videoInfo?.player_response?.videoDetails?.videoId;
 			if (!title || !videoId) reject({ error_code: '2001', message: ERROR_CODE['2001'] });
 
 			const validTitle = title.replace(/[#$%^&*()''""|]/g, '-');
 			const filePath = path.join(`resource/${validTitle}.mp4`);
-			const videoObject = ytdl(url, {
+			const videoObject = ytdl(embedYtd, {
 				filter: 'audioonly',
 			});
 
@@ -288,6 +322,7 @@ const downloadVideo = async (url: string): Promise<VideoLocal> => {
 						folderPath: 'resource',
 						title: `${validTitle}.mp3`,
 						videoId,
+						relatedVideos: _relatedVideos,
 					});
 				});
 		} catch (error) {
@@ -295,6 +330,7 @@ const downloadVideo = async (url: string): Promise<VideoLocal> => {
 		}
 	});
 };
+
 /** Convert mp4 local to mp3 local
  * @param  {VideoLocal} source
  */
@@ -398,11 +434,106 @@ export const youtube2mp3 = async (req: { body: { url: string; collectionId: stri
 		const request = new sql.Request();
 
 		request.query(
-			INSERT_AUDIO.replace('fileIdValue', fileOutput.fileId).replace('folderIdValue', collectionId).replace('videoIdValue', source.videoId)
+			INSERT_AUDIO.replace('fileIdValue', fileOutput.fileId)
+				.replace('folderIdValue', collectionId)
+				.replace('videoIdValue', source.videoId)
+				.replace('relatedVideosValue', source.relatedVideos)
 		);
 		res.json(output);
 	} catch (err) {
-		res.statusCode = 500;
+		res.statusCode = 422;
 		res.json(err);
+	}
+};
+
+interface RelatedVideo {
+	RelatedVideos: string;
+	FolderId: string;
+}
+const getRelatedVideos = async (audioId: string): Promise<RelatedVideo | any> => {
+	return new Promise((resolve, reject) => {
+		const request = new sql.Request();
+
+		request.query(GET_RELATED_VIDEOS.replace('fileIdValue', audioId), (err: object, data: { recordset: Array<object> }) => {
+			if (err) {
+				HCommon.logError(`[getRecommendAudio] -> [getRelatedVideos]: ${err}`);
+				reject(err);
+			}
+
+			const {
+				recordset: [items],
+			} = data;
+
+			resolve(items);
+		});
+	});
+};
+
+const getExistedVideos = (): Promise<Array<string>> => {
+	const request = new sql.Request();
+
+	return new Promise((resolve, reject) => {
+		request.query(GET_EXISTED_VIDEOS, (err: object, data: { recordset: Array<object> }) => {
+			if (err) {
+				HCommon.logError(`[getRecommendAudio] -> [getExistedVideos]: ${err}`);
+				reject(err);
+			}
+
+			const { recordset: items } = data;
+
+			resolve(items.map((item: any) => item.VideoId));
+		});
+	});
+};
+
+interface RecommendInfo {
+	url: string;
+	title: string;
+	thumb: string;
+	lengthSeconds: number;
+}
+const getRecommendInfo = async (videoId: string): Promise<RecommendInfo> => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const embedYtd = `https://youtu.be/${videoId}`;
+			const videoInfo = await ytdl.getInfo(embedYtd);
+			const title = videoInfo?.player_response?.videoDetails?.title;
+			const thumb = THUMB_YOUTUBE_VIDEO.replace('videoId', videoId);
+			const lengthSeconds = Number(videoInfo?.player_response?.videoDetails?.lengthSeconds);
+			const url = `https://youtu.be/${videoId}`;
+
+			resolve({ url, title, thumb, lengthSeconds });
+		} catch (error) {
+			reject(null);
+		}
+	});
+};
+
+const getTotalRecommnedInfo = async (videoIdList: Array<string>): Promise<Array<RecommendInfo>> => {
+	let promises = [];
+	for (let i = 0; i < videoIdList.length; i++) {
+		promises.push(getRecommendInfo(videoIdList[i]));
+	}
+
+	return Promise.all(promises);
+};
+export const getRecommendAudio = async (req: { body: { audioId: string } }, res: Response) => {
+	const { audioId = '' } = req.body;
+
+	try {
+		const relatedVideos: RelatedVideo = await getRelatedVideos(audioId);
+		const existedList: Array<string> = await getExistedVideos();
+		const relatedList: Array<string> = relatedVideos.RelatedVideos.split(',');
+		const recommendList: Array<string> = relatedList.filter((v) => !existedList.includes(v));
+		const recommendInfoList: Array<RecommendInfo> = await getTotalRecommnedInfo(recommendList.slice(2));
+
+		res.json({
+			audioId,
+			folderId: relatedVideos.FolderId,
+			recommendList: recommendInfoList,
+		});
+	} catch (error) {
+		res.statusCode = 500;
+		res.json(error);
 	}
 };

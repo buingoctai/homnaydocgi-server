@@ -23,16 +23,16 @@ const audioRoutes = require('./routes/audioRoutes');
 const speechRoutes = require('./routes/speechRoutes');
 const AppError = require('./utils/appError');
 
-const allowlist = ['http://localhost:3007', 'https://taibui.info','https://homnaydocgi-client-2-iogc8.ondigitalocean.app'];
+const allowlist = ['http://localhost:3007', 'https://taibui.info', 'https://homnaydocgi-client-2-iogc8.ondigitalocean.app'];
 const corsOptionsDelegate = function (req, callback) {
-  var corsOptions;
-  if (allowlist.indexOf(req.header('Origin')) !== -1) {
-    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false } // disable CORS for this request
-  }
-  callback(null, corsOptions) // callback expects two parameters: error and options
-}
+	var corsOptions;
+	if (allowlist.indexOf(req.header('Origin')) !== -1) {
+		corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+	} else {
+		corsOptions = { origin: false }; // disable CORS for this request
+	}
+	callback(null, corsOptions); // callback expects two parameters: error and options
+};
 
 app.use(cors(corsOptionsDelegate));
 app.use(bodyParser.urlencoded({ extended: false }));

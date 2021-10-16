@@ -40,9 +40,13 @@ const FIND_ALL_ARTICLES_CRAWL =
 const COUNT_TOTAL_ARTICLE_CRAWL = 'SELECT COUNT(*) FROM CRAWLER_ARTICLE';
 const INSER_ARTICLE_CRAWL = "INSERT INTO CRAWLER_AUDIO (ArticleId, AudioUrl) VALUES ('ArticleIdValue','AudioUrlValue')";
 const FIND_AUDIO_ARTICLE_CRAWL = "SELECT AudioUrl FROM CRAWLER_AUDIO WHERE ArticleId='IdValue'";
-const INSERT_AUDIO = "INSERT INTO Audio (FileId,FolderId,VideoId) VALUES ('fileIdValue','folderIdValue','videoIdValue')";
+const INSERT_AUDIO =
+	"INSERT INTO Audio (FileId,FolderId,VideoId,RelatedVideos) VALUES ('fileIdValue','folderIdValue','videoIdValue', 'relatedVideosValue')";
 const GET_THUMB = 'SELECT * FROM Audio';
 const SEARCH_THUMB = "SELECT * FROM Audio WHERE parent='parentValue'";
+const COUNT_AUDIO = "SELECT COUNT(*) from Audio where VideoId = 'videoIdValue'";
+const GET_RELATED_VIDEOS = "SELECT FolderId,RelatedVideos FROM Audio WHERE FileId='fileIdValue'";
+const GET_EXISTED_VIDEOS = 'SELECT VideoId FROM Audio';
 
 const ERROR_CODE = {
 	200: 'Success.',
@@ -106,4 +110,7 @@ module.exports = {
 	SEARCH_THUMB,
 	GET_THUMB,
 	GET_ALL_AUTHOR,
+	COUNT_AUDIO,
+	GET_RELATED_VIDEOS,
+	GET_EXISTED_VIDEOS,
 };
