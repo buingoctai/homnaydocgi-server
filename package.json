@@ -42,7 +42,7 @@
 		"node": "14.4.0"
 	},
 	"devDependencies": {
-		"@types/node": "^16.9.6",
+		"@types/node": "^12.12.7",
 		"nodemon": "^2.0.6",
 		"prettier": "2.2.1",
 		"ts-node": "^10.1.0",
